@@ -313,11 +313,27 @@ export class TrawApp {
   };
 
   private convertDeleteToUndefined = function handleUndefined<T>(patch: T): T {
-    return cloneDeepWith(patch, (value) => {
-      if (value === DELETE_ID) {
-        return null;
+    function deepCopy(src: any) {
+      const target: any = Array.isArray(src) ? [] : {};
+      if (Array.isArray(src)) return src.map((v) => (v === DELETE_ID ? undefined : v));
+      for (const key in src) {
+        const v = src[key];
+        if (v) {
+          if (v === DELETE_ID) {
+            target[key] = undefined;
+          } else if (typeof v === 'object') {
+            target[key] = deepCopy(v);
+          } else {
+            target[key] = v;
+          }
+        } else {
+          target[key] = v;
+        }
       }
-    });
+
+      return target;
+    }
+    return deepCopy(patch);
   };
 
   private handleUndo = (app: TldrawApp) => {
