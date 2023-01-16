@@ -14,6 +14,8 @@ interface SlideListItemProps {
   page: TDPage;
   index: number;
   type: 'list' | 'preview';
+  size: 'xs' | 'sm' | 'md' | 'lg';
+
   viewerCount?: number;
   selectState?: SlideListItemState;
   setRef?: (ref: HTMLLIElement) => void;
@@ -22,19 +24,29 @@ interface SlideListItemProps {
 }
 
 const slidesViewport = {
-  list: {
+  xs: {
     width: 105,
     height: 59,
   },
-  preview: {
+  sm: {
     width: 375,
     height: 210,
+  },
+  md: {
+    width: 660,
+    height: 371,
+  },
+  lg: {
+    width: 916,
+    height: 506,
   },
 };
 
 const slideSizes = {
-  list: `w-[${slidesViewport.list.width}px] `,
-  preview: `w-[${slidesViewport.preview.width}px] `,
+  xs: `w-[${slidesViewport.xs.width}px] `,
+  sm: `w-[${slidesViewport.sm.width}px] `,
+  md: `w-[${slidesViewport.md.width}px] `,
+  lg: `w-[${slidesViewport.lg.width}px] `,
 };
 
 export const SlideListItem = ({
@@ -43,6 +55,7 @@ export const SlideListItem = ({
   viewerCount = 0,
   selectState = SlideListItemState.DEFAULT,
   type,
+  size,
   setRef,
   handleClick,
   classnames,
@@ -58,9 +71,9 @@ export const SlideListItem = ({
       }}
       key={page.id}
       onClick={handleSelectSlide}
-      className={classNames(
-        `flex aspect-video flex-1 relative cursor-pointer rounded-xl ${slideSizes[type]} ${classnames}}`,
-      )}
+      className={classNames(`flex aspect-video flex-1 relative  rounded-xl ${slideSizes[size]} ${classnames}}`, {
+        'cursor-pointer': handleClick,
+      })}
     >
       <div
         className={classNames(
@@ -78,7 +91,7 @@ export const SlideListItem = ({
         )}
         {type === 'list' && <div className="ml-auto text-[10px] text-traw-grey-100 pr-2 pb-1 select-none">{index}</div>}
       </div>
-      <SlideThumbnail page={page} viewport={slidesViewport[type]} />
+      <SlideThumbnail page={page} viewport={slidesViewport[size]} />
     </li>
   );
 };

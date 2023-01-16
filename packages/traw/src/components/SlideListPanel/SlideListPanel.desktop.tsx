@@ -85,6 +85,7 @@ export const SlideListPanelDesktop = React.memo(function SlideListPanelDesktop()
                       viewerCount={othersInThisPage.length + (selectState === SlideListItemState.SELECTED ? 1 : 0)}
                       selectState={selectState}
                       type="list"
+                      size="xs"
                       handleClick={handleSlideClick}
                       setRef={(ref) => {
                         slideRef.current[page.id] = ref;
