@@ -135,7 +135,7 @@ export const PrimaryTools = React.memo(function PrimaryTools() {
       >
         <Pencil2Icon />
       </ToolButtonWithTooltip> */}
-      <ToolButtonWithTooltip variant="primary" label={'image'} onClick={uploadMedias} id="TD-PrimaryTools-Image">
+      <ToolButtonWithTooltip variant="primary" label={'import'} onClick={uploadMedias} id="TD-PrimaryTools-Import">
         <PlusIcon />
       </ToolButtonWithTooltip>
       <Separator.Root className="SeparatorRoot mx-2 my-1 w-[2px]  bg-traw-grey" decorative orientation="vertical" />
