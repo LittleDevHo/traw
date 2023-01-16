@@ -5,6 +5,7 @@ import { mountStoreDevtool } from 'simple-zustand-devtools';
 import {
   ActionType,
   AnimationType,
+  defaultPlayerOptions,
   PlayModeType,
   TDCamera,
   TrawRoomUser,
@@ -164,11 +165,14 @@ export class TrawApp {
   constructor({ user, document, records = [], speechRecognitionLanguage = 'ko-KR', playerOptions }: TrawAppOptions) {
     this.editorId = user.id;
 
-    const mode = playerOptions?.autoPlay
-      ? PlayModeType.PLAYING
-      : playerOptions?.isPlayerMode
-      ? PlayModeType.PREPARE
-      : PlayModeType.EDIT;
+    playerOptions = {
+      ...defaultPlayerOptions,
+      ...playerOptions,
+    };
+
+    const { isPlayerMode, autoPlay, mute } = playerOptions;
+
+    const mode = autoPlay ? PlayModeType.PLAYING : isPlayerMode ? PlayModeType.PREPARE : PlayModeType.EDIT;
 
     const recordMap: Record<string, TRRecord> = {};
     records.forEach((record) => {
@@ -183,11 +187,12 @@ export class TrawApp {
         start: 0,
         end: Infinity,
         current: 0,
-        volume: 1,
-        loop: false,
+        volume: mute ? 0 : 1,
+        loop: !!playerOptions.loop,
         totalTime: 0,
         isDone: false,
         animations: {},
+        speed: 1,
       },
       editor: {
         isPanelOpen,
@@ -1182,11 +1187,17 @@ export class TrawApp {
       produce((state) => {
         blocks.forEach((block) => {
           state.blocks[block.id] = block;
-          totalTime += block.voiceEnd - block.voiceStart;
+          if (block.isActive) totalTime += block.voiceEnd - block.voiceStart;
         });
         state.player.totalTime = totalTime;
       }),
     );
+
+    const autoPlay = this.store.getState().playerOptions.autoPlay;
+
+    if (autoPlay) {
+      this.playFromFirstBlock();
+    }
   };
 
   editBlock = (blockId: string, text: string) => {
@@ -1205,6 +1216,8 @@ export class TrawApp {
     this.store.setState(
       produce((state) => {
         state.blocks[blockId] = { ...state.blocks[blockId], isActive: false };
+
+        state.player.totalTime -= state.blocks[blockId].voiceEnd - state.blocks[blockId].voiceStart;
       }),
     );
     this.emit(TrawEventType.DeleteBlock, { tldrawApp: this.app, blockId });
@@ -1237,6 +1250,18 @@ export class TrawApp {
     this.applyRecords(pointer, { current: time });
   };
 
+  public setSpeed = (speed: number) => {
+    this.store.setState(
+      produce((state) => {
+        state.player.speed = speed;
+      }),
+    );
+    const targetBlock = this.store.getState().player.targetBlockId;
+    if (targetBlock) {
+      this.playBlock(targetBlock);
+    }
+  };
+
   public playBlock(blockId: string) {
     const block = this.store.getState().blocks[blockId || ''];
     if (!block) return;
@@ -1254,12 +1279,17 @@ export class TrawApp {
       this.audioInstance.stop();
     }
 
+    const { speed, volume } = this.store.getState().player;
+
     // TODO (Changje, 2022-12-24) - Reimplement it to support preloading
     const howl = new Howl({
       src: [playableVoice.url],
       format: playableVoice.ext,
+      html5: true,
+      volume,
     });
     howl.seek(block.voiceStart / 1000);
+    howl.rate(speed);
     howl.play();
     this.audioInstance = howl;
 
@@ -1271,7 +1301,7 @@ export class TrawApp {
           mode: PlayModeType.PLAYING,
           playAs: block.userId,
           start: Date.now(),
-          end: Date.now() + (block.voiceEnd - block.voiceStart),
+          end: Date.now() + (block.voiceEnd - block.voiceStart) / speed,
           isDone: false,
         };
       }),
@@ -1344,7 +1374,6 @@ export class TrawApp {
           isLimit: false,
           start: 0,
           current: 0,
-          volume: 1,
           loop: false,
           playAs: undefined,
           isDone: true,
@@ -1387,7 +1416,8 @@ export class TrawApp {
         return;
       } else {
         // update to current time
-        const fromBlockStart = Date.now() - player.start;
+        const speed = this.store.getState().player.speed;
+        const fromBlockStart = (Date.now() - player.start) * speed;
         const targetBlock = this.store.getState().blocks[player.targetBlockId || ''];
         if (!targetBlock) return;
         const currentTime = targetBlock.time + fromBlockStart;

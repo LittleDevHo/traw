@@ -5,11 +5,12 @@ import { PlayModeType, TRBlock } from 'types';
 import { getFormattedTime } from 'utils/getFormattedTime';
 import PlayController from './PlayController';
 import Seekbar from './Seekbar';
+import SpeedController from './Speed';
 
 const Player = () => {
   const app = useTrawApp();
   const mode = app.useStore((state) => state.player.mode);
-  const { targetBlockId, totalTime } = app.useStore((state) => state.player);
+  const { targetBlockId, totalTime, isDone, start, speed } = app.useStore((state) => state.player);
 
   const isPlaying = mode === PlayModeType.PLAYING;
 
@@ -33,26 +34,32 @@ const Player = () => {
 
   useEffect(() => {
     if (mode === PlayModeType.PLAYING && targetBlockId) {
+      setCurrentTime((Date.now() - start) * speed);
       timerRef.current = setInterval(() => {
         setCurrentTime((currentTime) => currentTime + 100);
       }, 100);
+    } else if (mode === PlayModeType.PAUSE) {
+      setCurrentTime((Date.now() - start) * speed);
     } else {
       setCurrentTime(0);
     }
     return () => {
+      setCurrentTime(0);
       clearInterval(timerRef.current);
     };
-  }, [mode, targetBlockId]);
+  }, [mode, speed, start, targetBlockId]);
 
   const currentBaseTime = useMemo(() => {
     let currentBaseTime = 0;
     if (targetBlockId) {
       const targetBlockIndex = sortedBlocks.findIndex((block) => block.id === targetBlockId);
-      if (targetBlockIndex >= 0) {
+      if (targetBlockIndex > 0) {
         currentBaseTime = sortedBlocks
           .slice(0, targetBlockIndex)
           .map((block) => getBlockDuration(block))
           .reduce((a, b) => a + b, 0);
+      } else {
+        currentBaseTime = 0;
       }
     }
     return currentBaseTime;
@@ -66,7 +73,7 @@ const Player = () => {
       <Spacer />
 
       <div className="text-traw-grey-dark text-sm">
-        {getFormattedTime(currentBaseTime + currentTime)} / {getFormattedTime(totalTime)}
+        {getFormattedTime(isDone ? totalTime : currentBaseTime + currentTime)} / {getFormattedTime(totalTime)}
       </div>
 
       <Spacer />
@@ -77,6 +84,10 @@ const Player = () => {
         currentBaseTime={currentBaseTime}
         getBlockDuration={getBlockDuration}
       />
+
+      <Spacer />
+
+      <SpeedController />
     </div>
   );
 };

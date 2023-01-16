@@ -53,7 +53,7 @@ interface SeekbarProps {
 const Seekbar = ({ blocks, currentBaseTime, isPlaying, getBlockDuration }: SeekbarProps) => {
   const app = useTrawApp();
 
-  const { end, start, totalTime } = app.useStore((state) => state.player);
+  const { end, start, totalTime, speed } = app.useStore((state) => state.player);
 
   const initialProgress = (Date.now() - start) / (end - start);
   const duration = end - start;
@@ -98,7 +98,7 @@ const Seekbar = ({ blocks, currentBaseTime, isPlaying, getBlockDuration }: Seekb
           top: 0,
           left: `${(currentBaseTime / totalTime) * 100}%`,
           height: '100%',
-          width: `${((end - start) / totalTime) * 100}%`,
+          width: `${(((end - start) * speed) / totalTime) * 100}%`,
         }}
       >
         {!!duration && <BlockProgress isAnimating={isPlaying} initial={initialProgress} duration={duration} />}

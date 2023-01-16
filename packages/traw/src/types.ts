@@ -80,6 +80,7 @@ export type TrawSnapshot = {
     volume: number;
     totalTime: number;
     isDone: boolean;
+    speed: number;
     animations: {
       [shapeId: string]: {
         type: AnimationType;
@@ -121,15 +122,23 @@ export type TrawSnapshot = {
     [userId: string]: TrawUser;
   };
   room?: TrawRoom;
-  playerOptions?: TrawPlayerOptions;
+  playerOptions: TrawPlayerOptions;
   // participants
 };
 
 export type TrawPlayerOptions = {
   isPlayerMode: boolean;
-  muted?: boolean;
+  mute?: boolean;
   loop?: boolean;
   autoPlay?: boolean;
+  speed?: number;
+};
+
+export const defaultPlayerOptions: TrawPlayerOptions = {
+  isPlayerMode: false,
+  mute: false,
+  loop: false,
+  autoPlay: false,
 };
 
 export type TrawUser = {
