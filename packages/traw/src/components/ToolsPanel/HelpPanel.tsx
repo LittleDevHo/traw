@@ -1,4 +1,3 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { GitHubLogoIcon, QuestionMarkIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 import * as Popover from '@radix-ui/react-popover';
 import { TDSnapshot } from '@tldraw/tldraw';
@@ -49,18 +48,18 @@ export function HelpPanel() {
   );
 }
 
-const LanguageMenuDropdown = () => {
-  return (
-    <DropdownMenu.Root dir="ltr">
-      <DropdownMenu.Trigger asChild>
-        <RowButton variant="wide" hasArrow>
-          Language
-        </RowButton>
-      </DropdownMenu.Trigger>
-      {/* <LanguageMenu /> */}
-    </DropdownMenu.Root>
-  );
-};
+// const LanguageMenuDropdown = () => {
+//   return (
+//     <DropdownMenu.Root dir="ltr">
+//       <DropdownMenu.Trigger asChild>
+//         <RowButton variant="wide" hasArrow>
+//           Language
+//         </RowButton>
+//       </DropdownMenu.Trigger>
+//       {/* <LanguageMenu /> */}
+//     </DropdownMenu.Root>
+//   );
+// };
 
 const linksData = [
   { id: 'github', icon: GitHubLogoIcon, url: 'https://github.com/trawhq/traw', label: 'Github' },
