@@ -48,7 +48,6 @@ export const ToolsPanel = React.memo(function ToolsPanel({ onBlur }: ToolsPanelP
           <Player />
         )}
       </StyledToolsPanelContainer>
-
       {!isEdit && <Subtitle />}
       {isDebugMode && (
         <StyledStatusWrap>

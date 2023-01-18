@@ -18,6 +18,7 @@ import './index.css';
 
 import { CursorComponent } from '@tldraw/core';
 import { breakpoints } from 'utils/breakpoints';
+import { HelpPanel } from 'components/ToolsPanel/HelpPanel';
 
 export interface TrawProps {
   app?: TrawApp;
@@ -88,6 +89,7 @@ const Traw = ({ app, document, components, functions }: TrawProps) => {
   return (
     <TrawContext.Provider value={trawApp}>
       <div id="traw" data-testid="traw" className="flex flex-1 flex-col overflow-hidden ">
+        <HelpPanel />
         <Editor components={components} readOnly={readOnly} />
         <StyledUI bp={breakpoints}>
           {!isPlayerMode && (
