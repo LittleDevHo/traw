@@ -197,6 +197,10 @@ export class TrawApp {
       editor: {
         isPanelOpen,
         padding: { right: 0 },
+        search: {
+          isSearching: false,
+          query: '',
+        },
       },
       viewport: {
         width: 0,
@@ -1484,4 +1488,30 @@ export class TrawApp {
     const handlers = this.eventHandlersMap.get(eventType) || [];
     handlers.forEach((h: TrawEventHandler) => h(event as any));
   }
+
+  startSearch = () => {
+    this.store.setState(
+      produce((state) => {
+        state.editor.search.isSearching = true;
+      }),
+    );
+  };
+
+  setSearchQuery = (query: string) => {
+    this.store.setState(
+      produce((state) => {
+        state.editor.search.isSearching = true;
+        state.editor.search.query = query;
+      }),
+    );
+  };
+
+  endSearch = () => {
+    this.store.setState(
+      produce((state) => {
+        state.editor.search.isSearching = false;
+        state.editor.search.query = '';
+      }),
+    );
+  };
 }

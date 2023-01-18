@@ -95,6 +95,10 @@ export type TrawSnapshot = {
   editor: {
     isPanelOpen: boolean;
     padding: TREditorPadding;
+    search: {
+      isSearching: boolean;
+      query: string;
+    };
   };
   viewport: TRViewport;
   records: Record<string, TRRecord>;

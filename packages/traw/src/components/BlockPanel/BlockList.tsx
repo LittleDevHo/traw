@@ -15,6 +15,7 @@ export interface BlockListProps {
 export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote }: BlockListProps) {
   const app = useTrawApp();
 
+  const query = app.useStore((state) => state.editor.search.query);
   const blocks = app.useStore((state: TrawSnapshot) => state.blocks);
   const mode = app.useStore((state: TrawSnapshot) => state.player.mode);
   const targetBlockId = app.useStore((state: TrawSnapshot) =>
@@ -35,7 +36,14 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
       .sort((a, b) => a.time - b.time);
   }, [blocks]);
 
-  const [beforeBlockLength, setBeforeBlockLength] = useState(sortedBlocks.length);
+  const sortedFilteredBlocks = useMemo(() => {
+    if (query) {
+      return sortedBlocks.filter((block) => block.text.includes(query));
+    }
+    return sortedBlocks;
+  }, [query, sortedBlocks]);
+
+  const [beforeBlockLength, setBeforeBlockLength] = useState(sortedFilteredBlocks.length);
 
   const handleResize = useCallback(() => {
     const height = domRef.current?.offsetHeight || 0;
@@ -64,10 +72,10 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
     if (isScrolled) {
       setNeedToScroll(true);
     } else {
-      scrollTo(sortedBlocks.length - 1);
+      scrollTo(sortedFilteredBlocks.length - 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortedBlocks.length]);
+  }, [sortedFilteredBlocks.length]);
 
   const handleAtBottomStateChange = (atBottom: boolean) => {
     if (atBottom) {
@@ -85,7 +93,7 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
   useEffect(() => {
     if (needToScroll) return;
 
-    const newBlockLength = sortedBlocks.length;
+    const newBlockLength = sortedFilteredBlocks.length;
     const newHeight = domRef.current?.offsetHeight;
     if (!newHeight) return;
     if (height < newHeight && newBlockLength > beforeBlockLength) {
@@ -93,21 +101,25 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
       setHeight(newHeight);
     }
     setBeforeBlockLength(newBlockLength);
-  }, [beforeBlockLength, needToScroll, scrollTo, sortedBlocks.length, height]);
+  }, [beforeBlockLength, needToScroll, scrollTo, sortedFilteredBlocks.length, height]);
 
   /**
    * Scroll to target block when playing
    */
   useEffect(() => {
     if (mode === PlayModeType.PLAYING && targetBlockId) {
-      const index = sortedBlocks.findIndex((block) => block.id === targetBlockId);
+      const index = sortedFilteredBlocks.findIndex((block) => block.id === targetBlockId);
       if (index !== -1) {
         scrollTo(index);
       }
     }
-  }, [sortedBlocks, mode, scrollTo, targetBlockId]);
+  }, [sortedFilteredBlocks, mode, scrollTo, targetBlockId]);
 
-  if (sortedBlocks.length === 0 && !isRecording) {
+  if (query && sortedFilteredBlocks.length === 0) {
+    return <EmptyBlockPanel EmptyVoiceNote={<div>No results found</div>} hideEmptyContents />;
+  }
+
+  if (sortedFilteredBlocks.length === 0 && !isRecording) {
     return <EmptyBlockPanel EmptyVoiceNote={EmptyVoiceNote} />;
   }
 
@@ -121,9 +133,9 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
       ref={domRef}
     >
       <Virtuoso
-        data={sortedBlocks}
+        data={sortedFilteredBlocks}
         style={{ height: `${height}px`, minHeight: '100%' }}
-        totalCount={sortedBlocks.length}
+        totalCount={sortedFilteredBlocks.length}
         atBottomStateChange={handleAtBottomStateChange}
         overscan={5}
         ref={virtuosoRef}
@@ -140,14 +152,15 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
                 isPlaying={targetBlockId === block.id}
                 isVoiceBlock={block.voices.length > 0}
                 handlePlayClick={handlePlayClick}
-                beforeBlockUserId={sortedBlocks[index - 1]?.userId}
+                highlightText={query || undefined}
+                beforeBlockUserId={sortedFilteredBlocks[index - 1]?.userId}
               />
             </>
           );
         }}
       />
-      {!!sortedBlocks.length && needToScroll && isScrolled && (
-        <ScrollToBottomButton handleClick={() => scrollTo(sortedBlocks.length - 1)} />
+      {!!sortedFilteredBlocks.length && needToScroll && isScrolled && (
+        <ScrollToBottomButton handleClick={() => scrollTo(sortedFilteredBlocks.length - 1)} />
       )}
     </div>
   );

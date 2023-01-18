@@ -4,6 +4,7 @@ import { useTrawApp } from 'hooks';
 import SvgPause from 'icons/pause';
 import SvgPlayArrow from 'icons/play-arrow';
 import React from 'react';
+import { styled } from 'stitches.config';
 import { PlayModeType } from 'types';
 
 const PlayController = () => {
@@ -29,25 +30,29 @@ const PlayController = () => {
     <div className="w-5 h-5">
       {isDone ? (
         <Tooltip label="play">
-          <TrawIconButton variant="primary" onClick={handlePlay}>
+          <PlayButton variant="primary" onClick={handlePlay}>
             <SvgPlayArrow className="fill-current w-full-h-full absolute" />
-          </TrawIconButton>
+          </PlayButton>
         </Tooltip>
       ) : mode === PlayModeType.PLAYING ? (
         <Tooltip label="pause">
-          <TrawIconButton variant="secondary" onClick={handlePlay}>
+          <PlayButton variant="secondary" onClick={handlePlay}>
             <SvgPause className="fill-current w-full-h-full absolute" />
-          </TrawIconButton>
+          </PlayButton>
         </Tooltip>
       ) : (
         <Tooltip label="play">
-          <TrawIconButton variant="primary" onClick={handlePlay}>
+          <PlayButton variant="primary" onClick={handlePlay}>
             <SvgPlayArrow className="fill-current w-full-h-full absolute" />
-          </TrawIconButton>
+          </PlayButton>
         </Tooltip>
       )}
     </div>
   );
 };
+
+const PlayButton = styled(TrawIconButton, {
+  width: '100%',
+});
 
 export default PlayController;

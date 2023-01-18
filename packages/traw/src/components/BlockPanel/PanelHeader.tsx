@@ -1,10 +1,13 @@
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { Cross2Icon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { SpeakingIndicator } from 'components/Indicator';
+import { TrawIconButton } from 'components/Primitives/TrawButton/TrawButton';
+import { useTrawApp } from 'hooks';
 import useDeviceDetect from 'hooks/useDeviceDetect';
 import { DoubleArrowLeftIcon } from 'icons/DoubleArrowLeft';
 import SvgRecording from 'icons/recording';
 import React from 'react';
 import RecordingTimer from './RecordingTimer';
+import SearchInput from './SearchInput';
 
 export interface PanelHeaderProps {
   isRecording?: boolean;
@@ -23,22 +26,32 @@ const formatTime = (time: number) => {
 
 export const PanelHeader = ({ isRecording, isTalking, panelOpen, togglePanel, totalTime }: PanelHeaderProps) => {
   const { isBrowser } = useDeviceDetect();
+  const app = useTrawApp();
+  const isSearching = app.useStore((state) => state.editor.search.isSearching);
+
+  const handleStartSearch = () => {
+    app.startSearch();
+  };
 
   return (
     <header className="flex mt-2 w-full gap-2  items-center select-none">
-      {!isRecording && (
+      {isSearching && <SearchInput />}
+      {!isRecording && !isSearching && (
         <>
           {isBrowser ? (
             <>
               <div className="text-traw-grey-dark text-[13px] font-bold pl-2">Voice note</div>
               <div className="text-traw-grey-100 font-[12px]">{formatTime(totalTime)}</div>
-              <button onClick={togglePanel} className=" ml-auto">
+              <TrawIconButton className="ml-auto" onClick={handleStartSearch}>
+                <MagnifyingGlassIcon className="text-traw-grey-100" />
+              </TrawIconButton>
+              <TrawIconButton onClick={togglePanel}>
                 {panelOpen ? (
                   <DoubleArrowLeftIcon flipHorizontal className="text-traw-grey-100 transition-transform" />
                 ) : (
                   <DoubleArrowLeftIcon className="text-traw-grey-100 transition-transform" />
                 )}
-              </button>
+              </TrawIconButton>
             </>
           ) : (
             <>
@@ -54,7 +67,7 @@ export const PanelHeader = ({ isRecording, isTalking, panelOpen, togglePanel, to
           )}
         </>
       )}
-      {isRecording && (
+      {isRecording && !isSearching && (
         <>
           {panelOpen ? (
             <>

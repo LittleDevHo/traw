@@ -17,6 +17,7 @@ export interface BlockItemProps {
   hideUserName?: boolean;
   isPlaying?: boolean;
   beforeBlockUserId: string;
+  highlightText?: string;
   handlePlayClick: (blockId: string) => void;
 }
 
@@ -29,6 +30,7 @@ export const BlockItem = memo(
     blockText,
     isPlaying,
     beforeBlockUserId,
+    highlightText,
     handlePlayClick,
   }: BlockItemProps) => {
     const trawApp = useTrawApp();
@@ -105,7 +107,20 @@ export const BlockItem = memo(
               )}
               onClick={onClick}
             >
-              {`${blockText}` || '[Empty]'}
+              {highlightText
+                ? blockText.split(new RegExp(`(${highlightText})`, 'gi')).map((part, i) => (
+                    <span
+                      key={i}
+                      style={
+                        part.toLowerCase() === highlightText.toLowerCase()
+                          ? { backgroundColor: 'rgb(114 110 246 / 40%)' }
+                          : {}
+                      }
+                    >
+                      {part}
+                    </span>
+                  ))
+                : `${blockText}` || '[Empty]'}
             </span>
           ) : (
             <BlockTextInput blockId={blockId} originText={blockText} endEditMode={handleToggleEditMode} />
