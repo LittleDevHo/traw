@@ -163,7 +163,7 @@ const PopoverAnchor = styled(Popover.Anchor, {
       side: 'bottom',
       panelOpen: true,
       css: {
-        bottom: 56,
+        bottom: 60,
       },
     },
     {
@@ -171,7 +171,7 @@ const PopoverAnchor = styled(Popover.Anchor, {
       side: 'bottom',
       panelOpen: false,
       css: {
-        bottom: 56,
+        bottom: 60,
       },
     },
     {
