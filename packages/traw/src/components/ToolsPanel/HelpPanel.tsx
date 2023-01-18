@@ -1,24 +1,19 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import {
-  ExternalLinkIcon,
-  GitHubLogoIcon,
-  HeartFilledIcon,
-  QuestionMarkIcon,
-  TwitterLogoIcon,
-} from '@radix-ui/react-icons';
+import { GitHubLogoIcon, QuestionMarkIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 import * as Popover from '@radix-ui/react-popover';
 import { TDSnapshot } from '@tldraw/tldraw';
 
 import { Divider } from 'components/Primitives/Divider';
+import { MenuContent } from 'components/Primitives/MenuContent';
 import { RowButton } from 'components/Primitives/RowButton';
 import { SmallIcon } from 'components/Primitives/SmallIcon';
-import * as React from 'react';
-import { breakpoints } from 'utils/breakpoints';
-import { styled } from 'stitches.config';
-import { KeyboardShortcutDialog } from './KeyboardShortcutDialog';
 import { useTldrawApp } from 'hooks/useTldrawApp';
-import { MenuContent } from 'components/Primitives/MenuContent';
+import { useTrawApp } from 'hooks/useTrawApp';
 import { DiscordIcon } from 'icons/DiscordIcon';
+import * as React from 'react';
+import { styled } from 'stitches.config';
+import { breakpoints } from 'utils/breakpoints';
+import { KeyboardShortcutDialog } from './KeyboardShortcutDialog';
 
 const isDebugModeSelector = (s: TDSnapshot) => s.settings.isDebugMode;
 const dockPositionState = (s: TDSnapshot) => s.settings.dockPosition;
@@ -28,11 +23,14 @@ export function HelpPanel() {
   const isDebugMode = app.useStore(isDebugModeSelector);
   const side = app.useStore(dockPositionState);
 
+  const trawApp = useTrawApp();
+  const panelOpen = trawApp.useStore((state) => state.editor.isPanelOpen);
+
   const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = React.useState(false);
 
   return (
     <Popover.Root>
-      <PopoverAnchor dir="ltr" debug={isDebugMode} side={side} bp={breakpoints}>
+      <PopoverAnchor dir="ltr" debug={isDebugMode} side={side} bp={breakpoints} panelOpen={panelOpen}>
         <Popover.Trigger dir="ltr" asChild>
           <HelpButton>
             <QuestionMarkIcon />
@@ -133,9 +131,9 @@ export const StyledContent = styled(MenuContent, {
 
 const PopoverAnchor = styled(Popover.Anchor, {
   position: 'absolute',
-  zIndex: 999,
+  zIndex: 200,
   right: 10,
-  bottom: 10,
+  bottom: 20,
   width: 32,
   height: 32,
   variants: {
@@ -144,12 +142,8 @@ const PopoverAnchor = styled(Popover.Anchor, {
       false: {},
     },
     bp: {
-      mobile: {
-        bottom: 64,
-      },
-      small: {
-        bottom: 10,
-      },
+      mobile: {},
+      small: {},
       medium: {},
       large: {},
     },
@@ -159,22 +153,44 @@ const PopoverAnchor = styled(Popover.Anchor, {
       right: {},
       bottom: {},
     },
+    panelOpen: {
+      true: {},
+      false: {},
+    },
   },
   compoundVariants: [
     {
       bp: 'mobile',
       side: 'bottom',
-      debug: true,
+      panelOpen: true,
       css: {
-        bottom: 104,
+        bottom: 56,
       },
     },
     {
-      bp: 'small',
+      bp: 'mobile',
       side: 'bottom',
-      debug: true,
+      panelOpen: false,
       css: {
-        bottom: 50,
+        bottom: 56,
+      },
+    },
+    {
+      bp: 'medium',
+      side: 'bottom',
+      panelOpen: true,
+      css: {
+        bottom: 20,
+        right: 294,
+      },
+    },
+    {
+      bp: 'medium',
+      side: 'bottom',
+      panelOpen: false,
+      css: {
+        bottom: 20,
+        right: 10,
       },
     },
   ],
