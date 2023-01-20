@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Source+Code+Pro&family=Source+Sans+Pro&family=Crimson+Pro&display=block');
+
 :root {
   /* Add your CSS variables here */
   --background: #fff;
@@ -72,8 +74,6 @@
   font-weight: 500;
   font-style: normal;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Source+Code+Pro&family=Source+Sans+Pro&family=Crimson+Pro&display=block');
 
 @font-face {
   font-family: 'Recursive';

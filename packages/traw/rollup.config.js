@@ -3,10 +3,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import postcss from 'rollup-plugin-postcss';
-import copy from 'rollup-plugin-copy';
 import json from '@rollup/plugin-json';
-
-const packageJson = require('./package.json');
+import packageJson from './package.json';
+import url from 'postcss-url';
 
 export default {
   input: 'src/index.ts',
@@ -33,14 +32,13 @@ export default {
       exclude: ['node_modules', 'build', 'storybook-static', 'src/**/*.stories.tsx', 'src/**/*.test.tsx'],
     }),
     json(),
-    postcss(),
-    copy({
-      targets: [
-        {
-          src: 'src/index.css',
-          dest: 'build',
-          rename: 'index.css',
-        },
+    postcss({
+      extract: resolve('build/index.css'),
+      to: 'build/index.css',
+      plugins: [
+        url({
+          url: 'copy',
+        }),
       ],
     }),
   ],
