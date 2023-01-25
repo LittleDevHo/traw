@@ -95,6 +95,7 @@ export class TrawDrawApp extends TldrawApp {
     };
   };
 }
+
 export class TrawApp {
   /**
    * The Tldraw app. (https://tldraw.com)
@@ -753,6 +754,11 @@ export class TrawApp {
 
     return sortedBlocks;
   }
+
+  reloadRecords = () => {
+    this.app.resetDocument();
+    this.applyRecords();
+  };
 
   applyRecords = (pointer?: number, animation?: { current: number }) => {
     const sortedRecords = this.sortedRecords;

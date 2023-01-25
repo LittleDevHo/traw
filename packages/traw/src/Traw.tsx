@@ -8,7 +8,7 @@ import { SlideListPanel } from 'components/SlideListPanel';
 import { ToolsPanel } from 'components/ToolsPanel';
 import { TopPanel } from 'components/TopPanel';
 import { TrawContext } from 'hooks';
-import React, { ReactNode, useCallback } from 'react';
+import React, { ComponentType, ReactNode, useCallback } from 'react';
 import { TrawApp } from 'state';
 import { styled } from 'stitches.config';
 import { TrawDocument } from 'types';
@@ -19,6 +19,7 @@ import './index.css';
 import { CursorComponent } from '@tldraw/core';
 import { breakpoints } from 'utils/breakpoints';
 import { HelpPanel } from 'components/ToolsPanel/HelpPanel';
+import { ErrorPopupProps } from 'components/Error';
 
 export interface TrawProps {
   app?: TrawApp;
@@ -27,6 +28,7 @@ export interface TrawProps {
     TopMenu?: ReactNode;
     EmptyVoiceNote?: ReactNode;
     EmptyDocumentPopup?: ReactNode;
+    ErrorPopup?: ComponentType<ErrorPopupProps>;
     /**
      * The component to render for multiplayer cursors.
      */
@@ -36,6 +38,8 @@ export interface TrawProps {
     handleChangeDocumentTitle?: (newValue: string) => void;
     handleNavigateHome?: () => void;
     handleLanguageClick?: () => void;
+    onError?: (error: Error) => void;
+    onReset?: () => void;
   };
 }
 
@@ -90,7 +94,7 @@ const Traw = ({ app, document, components, functions }: TrawProps) => {
     <TrawContext.Provider value={trawApp}>
       <div id="traw" data-testid="traw" className="flex flex-1 flex-col overflow-hidden ">
         <HelpPanel />
-        <Editor components={components} readOnly={readOnly} />
+        <Editor components={components} readOnly={readOnly} functions={functions} />
         <StyledUI bp={breakpoints}>
           {!isPlayerMode && (
             <TopPanel

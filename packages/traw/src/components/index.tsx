@@ -3,3 +3,4 @@ export * from './Header';
 export * from './BlockPanel';
 export * from './Slide';
 export * from './SlideListPanel';
+export * from './Error';
