@@ -1,6 +1,6 @@
 import { shapeUtils, TDDocument, TDStatus, TLDR } from '@tldraw/tldraw';
 import { useKeyboardShortcuts, useTrawApp } from 'hooks';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { ComponentType, useCallback, useEffect, useMemo } from 'react';
 
 import { CursorComponent, Renderer } from '@tldraw/core';
 import { TDCallbacks } from '@tldraw/tldraw/dist/state';
@@ -9,12 +9,12 @@ import EditWidget from 'components/EditWidget/EditWidget';
 import TlDrawLoading from 'components/Loading/TldrawLoading';
 import { useSelection } from 'hooks/useSelection';
 import { useTldrawApp } from 'hooks/useTldrawApp';
-import { ErrorBoundary as _Errorboundary } from 'react-error-boundary';
+import { ErrorBoundary } from 'react-error-boundary';
 import { styled } from 'stitches.config';
 import { PlayModeType } from 'types';
 import AnimationFactory from './AnimationFactory';
-
-const ErrorBoundary = _Errorboundary as any;
+import DefaultErrorPopup from 'components/Error/DefaultErrorPopup';
+import { ErrorPopupProps } from 'components/Error';
 
 export interface TldrawProps extends TDCallbacks {
   /**
@@ -95,9 +95,18 @@ export interface TldrawProps extends TDCallbacks {
    */
   components?: {
     /**
+     * The component to handle when throwing an error.
+     */
+    ErrorPopup?: ComponentType<ErrorPopupProps>;
+
+    /**
      * The component to render for multiplayer cursors.
      */
     Cursor?: CursorComponent;
+  };
+
+  functions?: {
+    onError?: (error: Error) => void;
   };
 
   /**
@@ -123,6 +132,7 @@ export function Tldraw({
   disableAssets = false,
   darkMode = isSystemDarkMode,
   components,
+  functions,
   hideCursors,
 }: TldrawProps) {
   const app = useTldrawApp();
@@ -196,6 +206,7 @@ export function Tldraw({
         showUI={showUI}
         readOnly={readOnly}
         components={components}
+        functions={functions}
         hideCursors={hideCursors}
       />
       {/* </AlertDialogContext.Provider> */}
@@ -215,12 +226,23 @@ interface InnerTldrawProps {
   showUI: boolean;
   showTools: boolean;
   components?: {
+    ErrorPopup?: ComponentType<ErrorPopupProps>;
     Cursor?: CursorComponent;
+  };
+  functions?: {
+    onError?: (error: Error) => void;
+    onReset?: () => void;
   };
   hideCursors?: boolean;
 }
 
-const InnerTldraw = React.memo(function InnerTldraw({ id, autofocus, components, hideCursors }: InnerTldrawProps) {
+const InnerTldraw = React.memo(function InnerTldraw({
+  id,
+  autofocus,
+  components,
+  hideCursors,
+  functions,
+}: InnerTldrawProps) {
   const app = useTldrawApp();
 
   const state = app.useStore();
@@ -231,14 +253,27 @@ const InnerTldraw = React.memo(function InnerTldraw({ id, autofocus, components,
   if (!page) return null;
   if (!document.pageStates[page.id]) return null;
 
-  return <RendererWrapper id={id} autofocus={autofocus} components={components} hideCursors={hideCursors} />;
+  return (
+    <RendererWrapper
+      id={id}
+      autofocus={autofocus}
+      components={components}
+      hideCursors={hideCursors}
+      functions={functions}
+    />
+  );
 });
 
 interface RendererWrapperProps {
   id?: string;
   autofocus: boolean;
   components?: {
+    ErrorPopup?: ComponentType<ErrorPopupProps>;
     Cursor?: CursorComponent;
+  };
+  functions?: {
+    onError?: (error: Error) => void;
+    onReset?: () => void;
   };
   hideCursors?: boolean;
 }
@@ -247,6 +282,7 @@ const RendererWrapper = React.memo(function RendererWrapper({
   id,
   autofocus,
   components,
+  functions,
   hideCursors,
 }: RendererWrapperProps) {
   const app = useTldrawApp();
@@ -296,13 +332,18 @@ const RendererWrapper = React.memo(function RendererWrapper({
   const hideIndicators = (isInSession && state.appState.status !== TDStatus.Brushing) || !isSelecting;
 
   const hideCloneHandles = isInSession || !isSelecting || pageState.camera.zoom < 0.2;
+
   return (
     <StyledLayout ref={rWrapper} tabIndex={-0}>
       {/* <AlertDialog container={dialogContainer} /> */}
       <TlDrawLoading />
       <OneOff focusableRef={rWrapper} autofocus={autofocus} />
       <ContextMenu>
-        <ErrorBoundary FallbackComponent={() => <div>Error!</div>}>
+        <ErrorBoundary
+          FallbackComponent={components?.ErrorPopup || DefaultErrorPopup}
+          onError={functions?.onError}
+          onReset={functions?.onReset}
+        >
           <Renderer
             id={id}
             containerRef={rWrapper}
@@ -454,15 +495,20 @@ export interface EditorProps {
    * (optional) Custom components to override parts of the default UI.
    */
   components?: {
+    ErrorPopup?: ComponentType<ErrorPopupProps>;
     /**
      * The component to render for multiplayer cursors.
      */
     Cursor?: CursorComponent;
   };
+  functions?: {
+    onError?: (error: Error) => void;
+    onReset?: () => void;
+  };
   readOnly?: boolean;
 }
 
-export const Editor = ({ components, readOnly = false }: EditorProps) => {
+export const Editor = ({ components, readOnly = false, functions }: EditorProps) => {
   const TrawApp = useTrawApp();
   const slideDomRef = React.useRef<HTMLDivElement>(null);
   const isPlayMode = TrawApp.useStore((state) => state.player.mode !== PlayModeType.EDIT);
@@ -492,6 +538,7 @@ export const Editor = ({ components, readOnly = false }: EditorProps) => {
             showMenu={false}
             showPages={false}
             components={components}
+            functions={functions}
             readOnly={false}
           />
         </AnimationFactory>
