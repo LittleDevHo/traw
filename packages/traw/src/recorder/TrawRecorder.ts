@@ -41,7 +41,7 @@ export class TrawRecorder {
     audioBitsPerSecond,
     speechRecognitionLanguage,
     audioContext,
-    silenceTimeout,
+    silenceTimeout = 1800,
     onTalking,
     onCreatingBlockUpdate,
     onBlockCreated,
@@ -58,6 +58,7 @@ export class TrawRecorder {
       onChangeMediaStream: this._onChangeMediaStream,
     });
     this._trawVoiceBlockGenerator = new TrawVoiceBlockGenerator({
+      silenceTimeout,
       speechRecognitionLanguage,
       onCreatingBlockUpdated: this.onCreatingBlockUpdate,
       onBlockCreated: this.onBlockCreated,

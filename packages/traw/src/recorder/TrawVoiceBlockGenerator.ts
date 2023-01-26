@@ -31,6 +31,11 @@ export interface TrawVoiceBlockGeneratorOptions {
   emptyBlockThreshold?: number;
 
   /**
+   * Trim from the end of the voice
+   */
+  silenceTimeout: number;
+
+  /**
    * Speech recognition language
    */
   speechRecognitionLanguage: string;
@@ -93,6 +98,11 @@ export class TrawVoiceBlockGenerator {
    */
   private _speechRecognitionLanguage: string;
 
+  /**
+   * Silence timeout - should trim from the end of the voice
+   */
+  private _silenceTimeout: number;
+
   /*
    * Public callbacks
    */
@@ -103,6 +113,7 @@ export class TrawVoiceBlockGenerator {
   constructor({
     voiceStartAdjustment = 500,
     emptyBlockThreshold = 3500,
+    silenceTimeout,
     speechRecognitionLanguage,
     onCreatingBlockUpdated,
     onBlockCreated,
@@ -115,6 +126,7 @@ export class TrawVoiceBlockGenerator {
     this._speakingStartedAt = 0;
     this._recognitions = [];
     this._speechRecognitionLanguage = speechRecognitionLanguage;
+    this._silenceTimeout = silenceTimeout;
 
     this.onCreatingBlockUpdated = onCreatingBlockUpdated;
     this.onBlockCreated = onBlockCreated;
@@ -166,7 +178,7 @@ export class TrawVoiceBlockGenerator {
       .trim();
 
     const voiceStart = Math.max(this._speakingStartedAt - this._blockStartedAt - this._voiceStartAdjustment, 0);
-    const voiceEnd = now - this._blockStartedAt;
+    const voiceEnd = now - this._blockStartedAt - this._silenceTimeout;
     const duration = voiceEnd - voiceStart;
 
     if (duration < this._emptyBlockThreshold && text.length === 0) {

@@ -15,10 +15,8 @@ export interface TrawTalkingDetectorOptions {
 
   /**
    * Trigger onSilence callback when the silence duration is longer than this value in milliseconds
-   *
-   * @default 1500
    */
-  silenceTimeout?: number;
+  silenceTimeout: number;
   onSilence?: onSilenceHandler;
 }
 
@@ -38,7 +36,7 @@ export class TrawTalkingDetector {
 
   public onSilence?: onSilenceHandler;
 
-  constructor({ audioContext, mediaStream, onTalking, silenceTimeout = 1800, onSilence }: TrawTalkingDetectorOptions) {
+  constructor({ audioContext, mediaStream, onTalking, silenceTimeout, onSilence }: TrawTalkingDetectorOptions) {
     this._audioContext = audioContext;
     this._mediaStream = mediaStream;
     this.onTalking = onTalking;
