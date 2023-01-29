@@ -76,7 +76,7 @@ export const PanelFooter = ({
               </button>
               <SpeakingIndicator size={17} isSpeaking={isTalking} />
             </div>
-            <SpeechViewer className="max-h-16 text-xs overflow-y-scroll px-0.5" text={recognizedText} />
+            <SpeechViewer className="h-8 text-xs overflow-y-scroll px-0.5" text={recognizedText} />
           </>
         )}
         <div
