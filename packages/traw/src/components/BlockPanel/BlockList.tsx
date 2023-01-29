@@ -148,20 +148,18 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
         initialTopMostItemIndex={initialBlockLength}
         itemContent={(index, block) => {
           return (
-            <>
-              <BlockItem
-                key={block.id}
-                userId={block.userId}
-                date={block.time}
-                blockId={block.id}
-                blockText={block.text}
-                isPlaying={targetBlockId === block.id}
-                isVoiceBlock={block.voices.length > 0}
-                handlePlayClick={handlePlayClick}
-                highlightText={query || undefined}
-                beforeBlockUserId={sortedFilteredBlocks[index - 1]?.userId}
-              />
-            </>
+            <BlockItem
+              key={block.id}
+              userId={block.userId}
+              date={block.time}
+              blockId={block.id}
+              blockText={block.text}
+              isPlaying={targetBlockId === block.id}
+              isVoiceBlock={block.voices.length > 0}
+              handlePlayClick={handlePlayClick}
+              highlightText={query || undefined}
+              beforeBlockUserId={sortedFilteredBlocks[index - 1]?.userId}
+            />
           );
         }}
       />

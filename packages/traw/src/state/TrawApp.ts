@@ -17,11 +17,14 @@ import {
   TRCamera,
   TREditorPadding,
   TRRecord,
+  TRViewMode,
   TRViewport,
 } from 'types';
 import createVanilla, { StoreApi } from 'zustand/vanilla';
 import { DEFAULT_CAMERA, DELETE_ID, SLIDE_HEIGHT, SLIDE_RATIO, SLIDE_WIDTH } from '../constants';
 
+import { TLBounds } from '@tldraw/core';
+import { Vec } from '@tldraw/vec';
 import { Howl } from 'howler';
 import produce from 'immer';
 import { cloneDeepWith } from 'lodash';
@@ -31,8 +34,6 @@ import { encodeFile } from 'utils/base64';
 import { isChrome } from 'utils/common';
 import create, { UseBoundStore } from 'zustand';
 import { TrawAppOptions } from './TrawAppOptions';
-import { Vec } from '@tldraw/vec';
-import { TLBounds } from '@tldraw/core';
 
 export const convertCameraTRtoTD = (camera: TRCamera, viewport: TRViewport, padding?: TREditorPadding): TDCamera => {
   const { right } = padding || { right: 0 };
@@ -215,6 +216,9 @@ export class TrawApp {
         recognizedText: '',
         startedAt: 0,
       },
+      ui: {
+        mode: TRViewMode.CANVAS,
+      },
       camera: {
         [this.editorId]: {
           targetSlideId: 'page',
@@ -396,10 +400,19 @@ export class TrawApp {
     this.syncCamera();
   };
 
+  get padding() {
+    const viewMode = this.store.getState().ui.mode;
+    if (viewMode === TRViewMode.CANVAS) return this.store.getState().editor.padding;
+    else
+      return {
+        right: 0,
+      };
+  }
+
   zoomToSelection = () => {
     const FIT_TO_SCREEN_PADDING = 100;
     const { selectedIds, shapes } = this.app;
-    const padding = this.store.getState().editor.padding;
+    const padding = this.padding;
 
     const selectedShapes = shapes.filter((shape) => selectedIds.includes(shape.id));
     if (selectedShapes.length === 0) return this;
@@ -447,7 +460,7 @@ export class TrawApp {
   zoomToFit = () => {
     const FIT_TO_SCREEN_PADDING = 100;
     const { shapes } = this.app;
-    const padding = this.store.getState().editor.padding;
+    const padding = this.padding;
 
     if (shapes.length === 0) return this;
     const { rendererBounds } = this.app;
@@ -492,7 +505,7 @@ export class TrawApp {
   };
 
   syncCamera = () => {
-    const { viewport, camera, player, editor } = this.store.getState();
+    const { viewport, camera, player } = this.store.getState();
 
     const { playAs } = player;
     const targetUserId = playAs || this.editorId;
@@ -501,7 +514,7 @@ export class TrawApp {
     const currentPageId = cameraObj.targetSlideId;
     if (!currentPageId) return;
 
-    const { padding } = editor;
+    const padding = this.padding;
 
     if (currentPageId !== this.app.appState.currentPageId) {
       if (this.app.getPage(currentPageId) === undefined) return;
@@ -526,11 +539,7 @@ export class TrawApp {
 
   handleCameraChange = (camera: TDCamera) => {
     if (this.store.getState().viewport.width === 0) return;
-    const trawCamera = convertCameraTDtoTR(
-      camera,
-      this.store.getState().viewport,
-      this.store.getState().editor.padding,
-    );
+    const trawCamera = convertCameraTDtoTR(camera, this.store.getState().viewport, this.padding);
     const currentPageId = this.app.appState.currentPageId;
 
     this.store.setState(
@@ -1517,6 +1526,14 @@ export class TrawApp {
       produce((state) => {
         state.editor.search.isSearching = false;
         state.editor.search.query = '';
+      }),
+    );
+  };
+
+  toggleViewMode = (mode: TRViewMode) => {
+    this.store.setState(
+      produce((state) => {
+        state.ui.mode = mode;
       }),
     );
   };

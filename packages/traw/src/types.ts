@@ -67,6 +67,12 @@ export type TREditorPadding = {
   right: number;
 };
 
+export enum TRViewMode {
+  CANVAS = 'CANVAS',
+  VIDEO = 'VIDEO',
+  DOC = 'DOC',
+}
+
 export type TrawSnapshot = {
   player: {
     mode: PlayModeType;
@@ -99,6 +105,9 @@ export type TrawSnapshot = {
       isSearching: boolean;
       query: string;
     };
+  };
+  ui: {
+    mode: TRViewMode;
   };
   viewport: TRViewport;
   records: Record<string, TRRecord>;

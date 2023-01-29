@@ -11,7 +11,6 @@ import { useSelection } from 'hooks/useSelection';
 import { useTldrawApp } from 'hooks/useTldrawApp';
 import { ErrorBoundary } from 'react-error-boundary';
 import { styled } from 'stitches.config';
-import { PlayModeType } from 'types';
 import AnimationFactory from './AnimationFactory';
 import DefaultErrorPopup from 'components/Error/DefaultErrorPopup';
 import { ErrorPopupProps } from 'components/Error';
@@ -508,10 +507,9 @@ export interface EditorProps {
   readOnly?: boolean;
 }
 
-export const Editor = ({ components, readOnly = false, functions }: EditorProps) => {
+export const Editor = ({ components, functions }: EditorProps) => {
   const TrawApp = useTrawApp();
   const slideDomRef = React.useRef<HTMLDivElement>(null);
-  const isPlayMode = TrawApp.useStore((state) => state.player.mode !== PlayModeType.EDIT);
 
   const handleResize = useCallback(() => {
     if (!slideDomRef.current) return;
@@ -543,7 +541,6 @@ export const Editor = ({ components, readOnly = false, functions }: EditorProps)
           />
         </AnimationFactory>
       </div>
-      {(isPlayMode || readOnly) && <div className="absolute left-0 right-0 top-0 bottom-0 w-full h-full z-[1]"></div>}
     </div>
   );
 };

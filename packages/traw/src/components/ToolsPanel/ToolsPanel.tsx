@@ -9,7 +9,6 @@ import { StatusBar } from './StatusBar';
 import { StyleMenu } from './StyleMenu';
 import { useTrawApp } from 'hooks';
 import { PlayModeType } from 'types';
-import Player from './Player/Player';
 import { ActionButton } from './ActionButton';
 import useDeviceDetect from 'hooks/useDeviceDetect';
 import Subtitle from './Player/Subtitle';
@@ -33,7 +32,7 @@ export const ToolsPanel = React.memo(function ToolsPanel({ onBlur }: ToolsPanelP
   return (
     <>
       <StyledToolsPanelContainer panelOpen={panelOpen} side={side} onBlur={onBlur} bp={breakpoints} debug={isDebugMode}>
-        {isEdit ? (
+        {
           <StyledAlignWrap id="TD-Tools" bp={breakpoints}>
             <StyledPrimaryTools
               orientation={side === 'bottom' || side === 'top' ? 'horizontal' : 'vertical'}
@@ -44,9 +43,7 @@ export const ToolsPanel = React.memo(function ToolsPanel({ onBlur }: ToolsPanelP
               {isBrowser && <StyleMenu />}
             </StyledPrimaryTools>
           </StyledAlignWrap>
-        ) : (
-          <Player />
-        )}
+        }
       </StyledToolsPanelContainer>
       {!isEdit && <Subtitle />}
       {isDebugMode && (
@@ -58,7 +55,7 @@ export const ToolsPanel = React.memo(function ToolsPanel({ onBlur }: ToolsPanelP
   );
 });
 
-const StyledToolsPanelContainer = styled('div', {
+export const StyledToolsPanelContainer = styled('div', {
   position: 'absolute',
   width: '100%',
   minWidth: 0,

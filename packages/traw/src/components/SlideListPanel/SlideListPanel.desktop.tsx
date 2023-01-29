@@ -111,6 +111,7 @@ const StyledSlideListPanelContainer = styled('div', {
   gap: '$4',
   display: 'flex',
   justifyContent: 'center',
+  userSelect: 'none',
   alignItems: 'center',
   zIndex: 200,
   overflow: 'hidden',

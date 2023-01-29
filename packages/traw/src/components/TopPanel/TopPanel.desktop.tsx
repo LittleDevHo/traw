@@ -24,8 +24,9 @@ export const TopPanelDesktop = React.memo(function TopPanelDesktop({
   );
 });
 
-const StyledTopPanelContainer = styled('div', {
+export const StyledTopPanelContainer = styled('div', {
   position: 'absolute',
+  userSelect: 'none',
   top: 10,
   right: 16,
   marginLeft: 16,
