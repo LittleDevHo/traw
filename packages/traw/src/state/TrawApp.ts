@@ -121,7 +121,7 @@ export class TrawApp {
    */
   private _state: TrawSnapshot;
 
-  protected pointer = -1;
+  protected pointer = 0;
 
   /**
    * Event handlers
@@ -730,8 +730,40 @@ export class TrawApp {
     this._actionStartTime = 0;
   };
 
+  /**
+   * Add new records to the state and apply them to the current document without animations.
+   *
+   * It handles out-of-order records.
+   * In example,
+   * Timeline ---------------------------------------->
+   * Existing        ^a   ^b        ^c     ^d
+   * New                        ^e     ^f     ^g
+   *
+   * With the above timeline, c & d are later than e & f but already exist in the document.
+   * In this case, we are going to apply from the earliest new record (which is e) to the end (which is g).
+   * In result, the document will be patched with e, c, f, d, g.
+   *
+   * @param records
+   */
   addRecords = (records: TRRecord[]) => {
-    const newRecords = records.filter((record) => !this.store.getState().records[record.id]);
+    // New records in ascending order
+    const newRecords = records
+      .filter((record) => !this.store.getState().records[record.id])
+      .sort((a, b) => a.start - b.start);
+
+    // Nothing to apply
+    if (newRecords.length === 0) {
+      return;
+    }
+
+    // Find the index of the first record(c) that is same or later than the first new record(e)
+    const indexApplyFrom = this.sortedRecords.findIndex((record) => record.start >= newRecords[0].start);
+
+    // If new records are out-of-order, rewind the pointer to the point that we need to reapply
+    if (indexApplyFrom > -1) {
+      this.pointer = indexApplyFrom;
+    }
+
     this.store.setState(
       produce((state) => {
         newRecords.forEach((record) => {
@@ -766,21 +798,45 @@ export class TrawApp {
 
   reloadRecords = () => {
     this.app.resetDocument();
+    this.pointer = 0;
     this.applyRecords();
   };
 
-  applyRecords = (pointer?: number, animation?: { current: number }) => {
+  /**
+   * Apply records to the current document.
+   * It is stateful and will apply records from the current pointer to the endIndex.
+   * @param endIndex Apply records until the endIndex (inclusive). Default is applying until the last record.
+   * @param animation
+   */
+  applyRecords = (endIndex?: number, animation?: { current: number }) => {
     const sortedRecords = this.sortedRecords;
-    const endIndex = pointer ? pointer + 1 : sortedRecords.length;
 
-    let startIndex = this.pointer + 1;
-    if (endIndex < startIndex) {
+    // Inclusive index
+    const end = endIndex ?? sortedRecords.length - 1;
+
+    let start = this.pointer;
+    if (start > end + 1) {
       this.app.resetDocument();
-      startIndex = 0;
+      start = 0;
     }
 
-    const records = sortedRecords.slice(startIndex, endIndex);
+    // The second parameter of slice is exclusive
+    const records = sortedRecords.slice(start, end + 1);
+    const isCameraChanged = this.patchRecords(records, animation);
 
+    if (animation) this.applyAnimation();
+
+    this.removeDefaultPage();
+
+    // Store last applied index
+    this.pointer = end + 1;
+
+    if (isCameraChanged) {
+      this.syncCamera();
+    }
+  };
+
+  private patchRecords(records: TRRecord[], animation?: { current: number }): boolean {
     let isCameraChanged = false;
     records.forEach((record) => {
       switch (record.type) {
@@ -956,17 +1012,8 @@ export class TrawApp {
         }
       }
     });
-
-    if (animation) this.applyAnimation();
-
-    this.removeDefaultPage();
-
-    this.pointer = endIndex - 1;
-
-    if (isCameraChanged) {
-      this.syncCamera();
-    }
-  };
+    return isCameraChanged;
+  }
 
   private applyAnimation = () => {
     const animations = this.store.getState().player.animations;
@@ -1263,10 +1310,10 @@ export class TrawApp {
   private applyRecordsToTime = (time: number) => {
     const records = this.sortedRecords.filter((r) => r.start <= time);
 
-    const pointer = records.filter((r) => r.start <= time).length - 1;
+    const endIndex = records.filter((r) => r.start <= time).length - 1;
 
-    if (pointer < 0) return;
-    this.applyRecords(pointer, { current: time });
+    if (endIndex < 0) return;
+    this.applyRecords(endIndex, { current: time });
   };
 
   public setSpeed = (speed: number) => {
