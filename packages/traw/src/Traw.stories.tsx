@@ -117,3 +117,22 @@ const FollowTemplate: ComponentStory<typeof Traw> = () => {
 
 export const Follow = FollowTemplate.bind({});
 Follow.args = {};
+
+const EmptyTemplate: ComponentStory<typeof Traw> = () => {
+  const [trawApp] = React.useState(
+    new TrawApp({
+      user: TEST_USER_1,
+      document: TEST_DOCUMENT_1,
+      records: [],
+    }),
+  );
+
+  return (
+    <div className="h-screen flex -m-4">
+      <Traw app={trawApp} />
+    </div>
+  );
+};
+export const Empty = EmptyTemplate.bind({});
+
+Empty.args = {};

@@ -29,9 +29,18 @@ export const ToolsPanel = React.memo(function ToolsPanel({ onBlur }: ToolsPanelP
   const isEdit = trawApp.useStore((state) => state.player.mode) === PlayModeType.EDIT;
   const { isBrowser } = useDeviceDetect();
 
+  const appPadding = trawApp.useStore((state) => state.editor.padding);
+
   return (
     <>
-      <StyledToolsPanelContainer panelOpen={panelOpen} side={side} onBlur={onBlur} bp={breakpoints} debug={isDebugMode}>
+      <StyledToolsPanelContainer
+        panelOpen={panelOpen}
+        side={side}
+        onBlur={onBlur}
+        bp={breakpoints}
+        debug={isDebugMode}
+        css={{ $$paddingRight: `${appPadding.right}px` }}
+      >
         {
           <StyledAlignWrap id="TD-Tools" bp={breakpoints}>
             <StyledPrimaryTools
@@ -68,6 +77,7 @@ export const StyledToolsPanelContainer = styled('div', {
   zIndex: 200,
   overflow: 'hidden',
   pointerEvents: 'none',
+
   '& > div > *': {
     pointerEvents: 'all',
   },
@@ -81,6 +91,7 @@ export const StyledToolsPanelContainer = styled('div', {
       small: {},
       medium: {
         height: 64,
+        paddingRight: '$$paddingRight',
       },
     },
     side: {
@@ -110,20 +121,6 @@ export const StyledToolsPanelContainer = styled('div', {
     },
   },
   compoundVariants: [
-    {
-      panelOpen: 'true',
-      bp: 'medium',
-      css: {
-        paddingRight: '285px',
-      },
-    },
-    {
-      panelOpen: 'false',
-      bp: 'medium',
-      css: {
-        paddingRight: '0px',
-      },
-    },
     {
       side: 'top',
       bp: 'large',
