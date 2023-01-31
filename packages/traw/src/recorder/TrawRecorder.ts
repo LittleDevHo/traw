@@ -31,6 +31,20 @@ export class TrawRecorder {
   private _trawTalkingDetector: TrawTalkingDetector;
   private _trawSpeechRecognizer: TrawSpeechRecognizer;
 
+  /**
+   * true when the user is exactly talking at the moment.
+   * @private
+   */
+  private _isTalking = false;
+
+  /**
+   * true when the user is continuously talking.
+   * When the user stops talking, it is going to become false after silenceTimeout.
+   * While in the silenceTimeout window, it is true after stop talking.
+   * @private
+   */
+  private _isSilent = true;
+
   public onTalking?: onTalkingHandler;
   public onCreatingBlockUpdate?: onCreatingBlockUpdatedHandler;
   public onBlockCreated?: onBlockCreatedHandler;
@@ -135,12 +149,17 @@ export class TrawRecorder {
 
   private _onTalking = (isTalking: boolean) => {
     if (isTalking) {
+      this._isTalking = true;
+      this._isSilent = false;
       this._trawVoiceBlockGenerator.onStartTalking();
+    } else {
+      this._isTalking = false;
     }
     this.onTalking?.(isTalking);
   };
 
   private _onSilence = () => {
+    this._isSilent = true;
     const isCreated = this._trawVoiceBlockGenerator.createBlock();
     if (isCreated) {
       this._trawVoiceRecorder.splitVoiceChunk();
@@ -148,6 +167,22 @@ export class TrawRecorder {
   };
 
   private _onRecognized = (action: 'add' | 'update', result: SpeechRecognitionResult) => {
+    if (this._isSilent) {
+      /*
+       * Ignore recognition result when the user is not talking
+       * - Changje Jeong, 2023-01-31
+       *
+       * It's related to Chrome echo cancellation.
+       * Chrome only supports echo cancellation on WebRTC mediaStream.
+       *
+       * Because of it, when the user tries to use Traw through the speaker,
+       * SpeechRecognition still works, which recognizes voices of others.
+       *
+       * To prevent dictating talks from others,
+       * ignoring SpeechRecognition results when _isSilent is true.
+       */
+      return;
+    }
     this._trawVoiceBlockGenerator.onRecognized(action, result);
   };
 

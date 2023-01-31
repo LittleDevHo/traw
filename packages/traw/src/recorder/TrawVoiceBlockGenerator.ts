@@ -112,7 +112,7 @@ export class TrawVoiceBlockGenerator {
 
   constructor({
     voiceStartAdjustment = 500,
-    emptyBlockThreshold = 3500,
+    emptyBlockThreshold = 2000,
     silenceTimeout,
     speechRecognitionLanguage,
     onCreatingBlockUpdated,
