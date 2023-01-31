@@ -27,9 +27,18 @@ export function HelpPanel() {
 
   const [isKeyboardShortcutsOpen, setIsKeyboardShortcutsOpen] = React.useState(false);
 
+  const appPadding = trawApp.useStore((state) => state.editor.padding);
+
   return (
     <Popover.Root>
-      <PopoverAnchor dir="ltr" debug={isDebugMode} side={side} bp={breakpoints} panelOpen={panelOpen}>
+      <PopoverAnchor
+        dir="ltr"
+        debug={isDebugMode}
+        side={side}
+        bp={breakpoints}
+        panelOpen={panelOpen}
+        css={{ $$right: `${appPadding.right + 10}px` }}
+      >
         <Popover.Trigger dir="ltr" asChild>
           <HelpButton>
             <QuestionMarkIcon />
@@ -143,7 +152,9 @@ const PopoverAnchor = styled(Popover.Anchor, {
     bp: {
       mobile: {},
       small: {},
-      medium: {},
+      medium: {
+        right: '$$right',
+      },
       large: {},
     },
     side: {
@@ -180,7 +191,6 @@ const PopoverAnchor = styled(Popover.Anchor, {
       panelOpen: true,
       css: {
         bottom: 20,
-        right: 294,
       },
     },
     {
@@ -189,7 +199,6 @@ const PopoverAnchor = styled(Popover.Anchor, {
       panelOpen: false,
       css: {
         bottom: 20,
-        right: 10,
       },
     },
   ],

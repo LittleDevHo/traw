@@ -16,6 +16,8 @@ export interface BlockPanelDesktopProps {
   };
 }
 
+const PANEL_OFFSET = 285;
+
 export const BlockPanelDesktop = ({
   handlePlayClick,
   handleCreateTextBlock,
@@ -43,12 +45,17 @@ export const BlockPanelDesktop = ({
   }, [showEmptyDocumentPopup, isRecording]);
 
   useEffect(() => {
+    if (showEmptyDocumentPopup) {
+      app.setPadding({ right: 0 });
+      return;
+    }
+
     if (panelOpen) {
-      app.setPadding({ right: 300 });
+      app.setPadding({ right: PANEL_OFFSET });
     } else {
       app.setPadding({ right: 0 });
     }
-  }, [app, panelOpen]);
+  }, [app, panelOpen, showEmptyDocumentPopup]);
 
   const closeEmptyDocumentPopup = () => {
     setCloseEmptyPopupForever(true);
