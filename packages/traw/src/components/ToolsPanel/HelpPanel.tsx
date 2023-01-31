@@ -37,7 +37,7 @@ export function HelpPanel() {
         side={side}
         bp={breakpoints}
         panelOpen={panelOpen}
-        css={{ $$paddingRight: `${appPadding.right + 32}px` }}
+        css={{ $$right: `${appPadding.right + 10}px` }}
       >
         <Popover.Trigger dir="ltr" asChild>
           <HelpButton>
@@ -153,7 +153,7 @@ const PopoverAnchor = styled(Popover.Anchor, {
       mobile: {},
       small: {},
       medium: {
-        paddingRight: '$$paddingRight',
+        right: '$$right',
       },
       large: {},
     },
