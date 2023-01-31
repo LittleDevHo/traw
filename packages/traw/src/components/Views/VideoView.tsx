@@ -32,7 +32,7 @@ const VideoView = () => {
         </div>
       </div>
       <div className="flex-1 bg-grey relative">
-        <div className="inset-3 flex flex-1 absolute bg-white rounded-xl p-2">
+        <div className="inset-3 flex flex-1 absolute bg-white rounded-xl p-2 top-[71px]">
           <BlockList handlePlayClick={handlePlayClick} isRecording={false} />
         </div>
       </div>

@@ -1,14 +1,13 @@
 import { TrawButton } from 'components/Primitives/TrawButton/TrawButton';
 import { useTrawApp } from 'hooks';
 import SvgHeadset from 'icons/Headset';
-import SvgPlayArrow from 'icons/play-arrow';
+import SvgMic from 'icons/mic';
+import SvgMicOff from 'icons/mic-off';
 import React from 'react';
 import { styled } from 'stitches.config';
 import { PlayModeType } from 'types';
-import SvgMic from 'icons/mic';
-import SvgMicOff from 'icons/mic-off';
 
-const TrawTopPanel = () => {
+const TrawCanvasMenu = () => {
   const app = useTrawApp();
 
   const isEditMode = app.useStore((state) => state.player.mode === PlayModeType.EDIT);
@@ -20,10 +19,6 @@ const TrawTopPanel = () => {
 
   const handleStop = () => {
     app.stopRecording();
-  };
-
-  const handleClickPlay = () => {
-    app.playFromFirstBlock();
   };
 
   const handleUnmute = () => {
@@ -59,9 +54,6 @@ const TrawTopPanel = () => {
                 <SvgHeadset className="w-4 h-4  fill-current mr-[6px]" />
                 Start Recording
               </TrawButton>
-              <TrawButton onClick={handleClickPlay} variant="icon">
-                <SvgPlayArrow className="w-6 h-6 color-white fill-current" />
-              </TrawButton>
             </>
           )}
         </>
@@ -80,4 +72,4 @@ const StyledPanel = styled('div', {
   gap: 3,
 });
 
-export default TrawTopPanel;
+export default TrawCanvasMenu;

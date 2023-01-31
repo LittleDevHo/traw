@@ -1,12 +1,14 @@
+import React from 'react';
 import classNames from 'classnames';
 import { useTrawApp } from 'hooks';
-import React from 'react';
+import { styled } from 'stitches.config';
 import { TRViewMode } from 'types';
 
 const SELECTED_CSS = 'text-traw-purple';
 
-const ViewTogglePanel = () => {
+const ViewToggleGroup = () => {
   const app = useTrawApp();
+
   const viewMode = app.useStore((state) => state.ui.mode);
 
   const handleClicked = (mode: TRViewMode) => {
@@ -14,10 +16,7 @@ const ViewTogglePanel = () => {
   };
 
   return (
-    <div
-      className="inline-flex rounded-md shadow-sm absolute top-[10px] left-[50%] translate-x-[-50%] z-10"
-      role="group"
-    >
+    <ToggleButtonContainer>
       <button
         type="button"
         className={classNames(
@@ -48,8 +47,15 @@ const ViewTogglePanel = () => {
       >
         Doc
       </button>
-    </div>
+    </ToggleButtonContainer>
   );
 };
 
-export default ViewTogglePanel;
+const ToggleButtonContainer = styled('div', {
+  borderRadius: 15,
+  display: 'flex',
+  margin: '0 auto',
+  alignItems: 'center',
+});
+
+export default ViewToggleGroup;
