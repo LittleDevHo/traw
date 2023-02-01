@@ -13,6 +13,7 @@ const ViewComponentMap = {
 
 const Views = () => {
   const app = useTrawApp();
+
   const viewMode = app.useStore((state) => state.ui.mode);
 
   return <>{React.createElement(ViewComponentMap[viewMode])}</>;

@@ -21,6 +21,7 @@ const { styled, createTheme } = createStitches({
       tooltipContrast: '#ffffff',
       warn: 'rgba(255, 100, 100, 1)',
       canvas: '#edeff7',
+      trawPurple: '#726EF6',
     },
     shadows: {
       2: '0px 1px 1px rgba(0, 0, 0, 0.14)',

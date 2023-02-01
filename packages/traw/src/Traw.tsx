@@ -13,7 +13,7 @@ import './index.css';
 import Views from 'components/Views/Views';
 import { TRComponentsContext, TRCustomComponentsType } from 'hooks/useCustomComponent';
 import { TRCustomFunctionsType, TRFunctionsContext } from 'hooks/useCustomFunctions';
-import ViewTogglePanel from 'components/Views/ViewTogglePanel';
+import HeaderPanel from 'components/Views/HeaderPanel';
 
 export interface TrawProps {
   app?: TrawApp;
@@ -50,7 +50,7 @@ const Traw = ({ app, document, components, functions }: TrawProps) => {
     <TrawContext.Provider value={trawApp}>
       <TRComponentsContext.Provider value={components || {}}>
         <TRFunctionsContext.Provider value={functions || {}}>
-          <ViewTogglePanel />
+          <HeaderPanel />
           <Views />
         </TRFunctionsContext.Provider>
       </TRComponentsContext.Provider>

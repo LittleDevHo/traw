@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import Logo from '../../icons/Logo';
-import Title from '../HeaderPanel/Title';
+import Title from '../DocumentMenuPanel/Title';
 
 export interface HeaderProps {
   // Title

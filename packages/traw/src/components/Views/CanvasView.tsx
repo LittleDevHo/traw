@@ -1,16 +1,15 @@
+import { BlockPanel } from 'components/BlockPanel';
 import { Editor } from 'components/Editor';
 import { SlideListPanel } from 'components/SlideListPanel';
 import { ToolsPanel } from 'components/ToolsPanel';
-import { TopPanel } from 'components/TopPanel';
-import { useTrawApp } from 'hooks';
-import React, { useCallback } from 'react';
 import { HelpPanel } from 'components/ToolsPanel/HelpPanel';
+import { useTrawApp } from 'hooks';
 import { useTRComponentsContext } from 'hooks/useCustomComponent';
 import { useTRFunctionsContext } from 'hooks/useCustomFunctions';
+import usePlay from 'hooks/usePlay';
+import React, { useCallback } from 'react';
 import { styled } from 'stitches.config';
 import { breakpoints } from 'utils/breakpoints';
-import { BlockPanel } from 'components/BlockPanel';
-import usePlay from 'hooks/usePlay';
 
 const CanvasView = () => {
   const trawApp = useTrawApp();
@@ -36,13 +35,6 @@ const CanvasView = () => {
       <HelpPanel />
       <Editor components={components} readOnly={readOnly} functions={functions} />
       <StyledUI bp={breakpoints}>
-        {!isPlayerMode && (
-          <TopPanel
-            Room={components?.TopMenu}
-            handleChangeTitle={functions?.handleChangeDocumentTitle}
-            handleNavigateHome={functions?.handleNavigateHome}
-          />
-        )}
         {!isPlayerMode && (
           <BlockPanel
             handlePlayClick={handlePlayClick}
@@ -79,9 +71,7 @@ const StyledUI = styled('div', {
   padding: 0,
   variants: {
     bp: {
-      medium: {
-        padding: 8,
-      },
+      medium: {},
     },
   },
 });

@@ -1,6 +1,6 @@
 import BlockList from 'components/BlockPanel/BlockList';
 import { Editor } from 'components/Editor';
-import Title from 'components/HeaderPanel/Title';
+import Title from 'components/DocumentMenuPanel/Title';
 import { useTrawApp } from 'hooks';
 import { useTRFunctionsContext } from 'hooks/useCustomFunctions';
 import React from 'react';
@@ -13,7 +13,7 @@ const DocView = () => {
 
   return (
     <div className="flex flex-1 h-full justify-center bg-traw-grey-50">
-      <div className="max-w-[720px] px-[20px] flex flex-1 pt-16 flex-col justify-start bg-white">
+      <div className="max-w-[720px] px-[20px] flex flex-1 pt-4 mt-[71px] flex-col justify-start bg-white">
         <Title
           title={document.name}
           canEdit={document.canEdit}
