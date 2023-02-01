@@ -113,6 +113,10 @@ export type TrawSnapshot = {
   viewport: TRViewport;
   records: Record<string, TRRecord>;
   blocks: Record<string, TRBlock>;
+  blockViewportMap: {
+    // value string is recordId
+    [blockId: string]: string;
+  };
   recording: {
     isRecording: boolean;
     isMuted: boolean;
@@ -197,6 +201,7 @@ export type TRBlock = {
   voices: TRBlockVoice[];
   voiceStart: number;
   voiceEnd: number;
+  captureId?: string;
 };
 
 export type TRBlockVoice = {

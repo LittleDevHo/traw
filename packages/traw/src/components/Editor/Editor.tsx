@@ -507,7 +507,7 @@ export interface EditorProps {
   readOnly?: boolean;
 }
 
-export const Editor = ({ components, functions }: EditorProps) => {
+export const Editor = ({ components, functions, readOnly }: EditorProps) => {
   const TrawApp = useTrawApp();
   const slideDomRef = React.useRef<HTMLDivElement>(null);
 
@@ -537,7 +537,7 @@ export const Editor = ({ components, functions }: EditorProps) => {
             showPages={false}
             components={components}
             functions={functions}
-            readOnly={false}
+            readOnly={readOnly}
           />
         </AnimationFactory>
       </div>

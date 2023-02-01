@@ -127,6 +127,8 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
     trawApp.zoomToSelection();
   }, [trawApp]);
 
+  if (app.readOnly) return null;
+
   return (
     <div
       style={{
