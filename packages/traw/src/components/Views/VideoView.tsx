@@ -12,7 +12,7 @@ const VideoView = () => {
   const functions = useTRFunctionsContext();
 
   return (
-    <div className="flex-1 flex bg-traw-grey-200">
+    <div className="flex-1 flex bg-traw-purple-dark ">
       <div className="flex-[2] relative">
         <div className="inset-3 right-0 flex flex-1 absolute">
           <div className="aspect-video w-full bg-white top-[50%] translate-y-[-50%] absolute rounded-xl overflow-hidden">
@@ -30,7 +30,7 @@ const VideoView = () => {
         </div>
       </div>
       <div className="flex-1 bg-grey relative">
-        <div className="inset-3 flex flex-1 absolute bg-white rounded-xl p-2 top-[71px]">
+        <div className="inset-3 flex flex-1 absolute bg-white rounded-xl p-2 top-[12px]">
           <BlockList isRecording={false} />
         </div>
       </div>

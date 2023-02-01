@@ -1,4 +1,4 @@
-import BlockItem from 'components/BlockPanel/BlockItem';
+import BlockItem from 'components/BlockPanel/BlockItem/BlockItem';
 import { useTrawApp } from 'hooks';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
