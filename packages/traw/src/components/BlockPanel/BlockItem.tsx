@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 
 import { useTrawApp } from 'hooks';
+import usePlay from 'hooks/usePlay';
 import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
-import { TrawSnapshot } from 'types';
+import { TrawSnapshot, TRViewMode } from 'types';
 import { UserAvatar } from '../Avatar/Avatar';
 import BlockItemMenu from './BlockItemMenu';
 import BlockTextInput from './BlockTextInput';
@@ -18,28 +19,21 @@ export interface BlockItemProps {
   isPlaying?: boolean;
   beforeBlockUserId: string;
   highlightText?: string;
-  handlePlayClick: (blockId: string) => void;
 }
 
 export const BlockItem = memo(
-  ({
-    userId,
-    blockId,
-    date,
-    isVoiceBlock,
-    blockText,
-    isPlaying,
-    beforeBlockUserId,
-    highlightText,
-    handlePlayClick,
-  }: BlockItemProps) => {
+  ({ userId, blockId, date, isVoiceBlock, blockText, isPlaying, beforeBlockUserId, highlightText }: BlockItemProps) => {
     const trawApp = useTrawApp();
 
     const user = trawApp.useStore((state: TrawSnapshot) => state.users[userId]);
     const editorId = trawApp.useStore((state: TrawSnapshot) => state.user.id);
     const showBlockMenu = editorId === userId;
 
+    const viewMode = trawApp.useStore((state: TrawSnapshot) => state.ui.mode);
+
     const [editMode, setEditMode] = useState(false);
+
+    const { handlePlayClick } = usePlay();
 
     const dateStr = useMemo(() => {
       if (typeof date === 'string') {
@@ -50,8 +44,20 @@ export const BlockItem = memo(
     }, [date]);
 
     const onClick = useCallback(() => {
-      handlePlayClick(blockId);
-    }, [blockId, handlePlayClick]);
+      if (viewMode === TRViewMode.CANVAS) {
+        setEditMode(true);
+        return;
+      }
+
+      if (viewMode === TRViewMode.VIDEO) {
+        handlePlayClick(blockId);
+        return;
+      }
+
+      if (viewMode === TRViewMode.DOC) {
+        return;
+      }
+    }, [blockId, handlePlayClick, viewMode]);
 
     useEffect(() => {
       async function fetchAndSetUser() {

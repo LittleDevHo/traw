@@ -22,7 +22,7 @@ const DocView = () => {
         <div className="aspect-video">
           <Editor readOnly={true} />
         </div>
-        <BlockList handlePlayClick={() => null} isRecording={false} />
+        <BlockList isRecording={false} />
       </div>
     </div>
   );

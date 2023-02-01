@@ -24,7 +24,7 @@ export const VideoMenu = React.memo(function VideoMenu() {
       {playerMode !== PlayModeType.PLAYING && (
         <Tooltip label="play">
           <TrawButton onClick={handleClickPlay} variant="primary">
-            <SvgPlayArrow className="w-4 h-4  fill-current mr-[6px]" />
+            <SvgPlayArrow className="w-4 h-4  fill-current mr-[5px]" />
             Play
           </TrawButton>
         </Tooltip>
@@ -32,7 +32,7 @@ export const VideoMenu = React.memo(function VideoMenu() {
       {playerMode === PlayModeType.PLAYING && (
         <Tooltip label="stop">
           <TrawButton onClick={handleClickStop} variant="secondary">
-            <SvgPause className="w-4 h-4  fill-current mr-[6px]" />
+            <SvgPause className="w-4 h-4  fill-current mr-[5px]" />
             STOP
           </TrawButton>
         </Tooltip>

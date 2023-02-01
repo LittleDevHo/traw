@@ -7,7 +7,6 @@ import PanelFooter from './PanelFooter';
 import PanelHeader from './PanelHeader';
 
 export interface BlockPanelMobileProps {
-  handlePlayClick: (blockId?: string) => void;
   handleCreateTextBlock: (text: string) => void;
   handleLanguageClick?: () => void;
   components?: {
@@ -16,12 +15,7 @@ export interface BlockPanelMobileProps {
   };
 }
 
-export const BlockPanelMobile = ({
-  handlePlayClick,
-  handleCreateTextBlock,
-  handleLanguageClick,
-  components,
-}: BlockPanelMobileProps) => {
+export const BlockPanelMobile = ({ handleCreateTextBlock, handleLanguageClick, components }: BlockPanelMobileProps) => {
   const app = useTrawApp();
   const panelOpen = app.useStore((state) => state.editor.isPanelOpen);
   const totalTime = app.useStore((state) => state.player.totalTime);
@@ -52,13 +46,7 @@ export const BlockPanelMobile = ({
             totalTime={totalTime}
             togglePanel={app.togglePanel}
           />
-          {panelOpen && (
-            <BlockList
-              handlePlayClick={handlePlayClick}
-              isRecording={isRecording}
-              EmptyVoiceNote={components?.EmptyVoiceNote}
-            />
-          )}
+          {panelOpen && <BlockList isRecording={isRecording} EmptyVoiceNote={components?.EmptyVoiceNote} />}
           {panelOpen && (
             <PanelFooter
               isRecording={isRecording}

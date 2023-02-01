@@ -7,12 +7,11 @@ import { useEventListener, useIsomorphicLayoutEffect } from 'usehooks-ts';
 import EmptyBlockPanel from './EmptyBlockPanel';
 import ScrollToBottomButton from './ScrollToBottomButton';
 export interface BlockListProps {
-  handlePlayClick: (blockId: string) => void;
   isRecording: boolean;
   EmptyVoiceNote?: React.ReactNode;
 }
 
-export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote }: BlockListProps) {
+export default function BlockList({ isRecording, EmptyVoiceNote }: BlockListProps) {
   const app = useTrawApp();
 
   const query = app.useStore((state) => state.editor.search.query);
@@ -156,7 +155,6 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
               blockText={block.text}
               isPlaying={targetBlockId === block.id}
               isVoiceBlock={block.voices.length > 0}
-              handlePlayClick={handlePlayClick}
               highlightText={query || undefined}
               beforeBlockUserId={sortedFilteredBlocks[index - 1]?.userId}
             />

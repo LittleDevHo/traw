@@ -4,14 +4,12 @@ import { StyledToolsPanelContainer } from 'components/ToolsPanel';
 import Player from 'components/ToolsPanel/Player/Player';
 import { useTRComponentsContext } from 'hooks/useCustomComponent';
 import { useTRFunctionsContext } from 'hooks/useCustomFunctions';
-import usePlay from 'hooks/usePlay';
 import React from 'react';
 import { breakpoints } from 'utils/breakpoints';
 
 const VideoView = () => {
   const components = useTRComponentsContext();
   const functions = useTRFunctionsContext();
-  const { handlePlayClick } = usePlay();
 
   return (
     <div className="flex-1 flex bg-traw-grey-200">
@@ -33,7 +31,7 @@ const VideoView = () => {
       </div>
       <div className="flex-1 bg-grey relative">
         <div className="inset-3 flex flex-1 absolute bg-white rounded-xl p-2 top-[71px]">
-          <BlockList handlePlayClick={handlePlayClick} isRecording={false} />
+          <BlockList isRecording={false} />
         </div>
       </div>
     </div>

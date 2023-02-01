@@ -6,7 +6,6 @@ import { HelpPanel } from 'components/ToolsPanel/HelpPanel';
 import { useTrawApp } from 'hooks';
 import { useTRComponentsContext } from 'hooks/useCustomComponent';
 import { useTRFunctionsContext } from 'hooks/useCustomFunctions';
-import usePlay from 'hooks/usePlay';
 import React, { useCallback } from 'react';
 import { styled } from 'stitches.config';
 import { breakpoints } from 'utils/breakpoints';
@@ -16,7 +15,6 @@ const CanvasView = () => {
   const components = useTRComponentsContext();
   const functions = useTRFunctionsContext();
   const document = trawApp.useStore((state) => state.document);
-  const { handlePlayClick } = usePlay();
 
   const isPlayerMode = trawApp.useStore((state) => state.playerOptions?.isPlayerMode);
   const readOnly = isPlayerMode || (document && !document.canEdit) ? true : false;
@@ -37,7 +35,6 @@ const CanvasView = () => {
       <StyledUI bp={breakpoints}>
         {!isPlayerMode && (
           <BlockPanel
-            handlePlayClick={handlePlayClick}
             handleLanguageClick={functions?.handleLanguageClick ?? handleLanguageClickDefault}
             components={{
               EmptyVoiceNote: components?.EmptyVoiceNote,
