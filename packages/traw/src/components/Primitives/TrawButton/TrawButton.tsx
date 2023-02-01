@@ -38,6 +38,13 @@ export const TrawButton = styled('button', {
           backgroundColor: 'rgb(79, 77, 172)',
         },
       },
+      secondary: {
+        backgroundColor: '#E983B2',
+        color: 'white',
+        '&:hover': {
+          backgroundColor: 'rgba(163 91 123)',
+        },
+      },
       text: {
         backgroundColor: 'transparent',
         color: '#2B2B59',
