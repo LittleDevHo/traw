@@ -2173,6 +2173,22 @@
     "@radix-ui/react-use-callback-ref" "1.0.0"
     "@radix-ui/react-use-controllable-state" "1.0.0"
 
+"@radix-ui/react-roving-focus@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-roving-focus/-/react-roving-focus-1.0.2.tgz#d8ac2e3b8006697bdfc2b0eb06bef7e15b6245de"
+  integrity sha512-HLK+CqD/8pN6GfJm3U+cqpqhSKYAWiOJDe+A+8MfxBnOue39QEeMa43csUn2CXCHQT0/mewh1LrrG4tfkM9DMA==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/primitive" "1.0.0"
+    "@radix-ui/react-collection" "1.0.1"
+    "@radix-ui/react-compose-refs" "1.0.0"
+    "@radix-ui/react-context" "1.0.0"
+    "@radix-ui/react-direction" "1.0.0"
+    "@radix-ui/react-id" "1.0.0"
+    "@radix-ui/react-primitive" "1.0.1"
+    "@radix-ui/react-use-callback-ref" "1.0.0"
+    "@radix-ui/react-use-controllable-state" "1.0.0"
+
 "@radix-ui/react-separator@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-separator/-/react-separator-1.0.1.tgz#0ff3036c7f499fee9ea99268dc9ebf16055e356f"
@@ -2196,6 +2212,30 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-compose-refs" "1.0.0"
+
+"@radix-ui/react-toggle-group@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-toggle-group/-/react-toggle-group-1.0.2.tgz#85161db71554cb3809b9953b892f475a8dcb3a13"
+  integrity sha512-Tm5Rn5pdgnr6uexI0cM3X3EZKqYfxlt4iTYx4tBbhSJHtgasgSyXezlHm3tJ5OfSK+1ZIQYD9xV4izifkLuuug==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/primitive" "1.0.0"
+    "@radix-ui/react-context" "1.0.0"
+    "@radix-ui/react-direction" "1.0.0"
+    "@radix-ui/react-primitive" "1.0.1"
+    "@radix-ui/react-roving-focus" "1.0.2"
+    "@radix-ui/react-toggle" "1.0.1"
+    "@radix-ui/react-use-controllable-state" "1.0.0"
+
+"@radix-ui/react-toggle@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-toggle/-/react-toggle-1.0.1.tgz#20120c060cd3cd6267463a6a9bcb106134b5af57"
+  integrity sha512-hZIp9ZKnw4NwVqeB4evWBLa91ryaSJhAO0Ed82wkzRPgg/I29ypcY6SuBb3AMZW+GsuBZpIVujpCq+33TdEcyg==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/primitive" "1.0.0"
+    "@radix-ui/react-primitive" "1.0.1"
+    "@radix-ui/react-use-controllable-state" "1.0.0"
 
 "@radix-ui/react-tooltip@^1.0.0", "@radix-ui/react-tooltip@^1.0.2":
   version "1.0.2"

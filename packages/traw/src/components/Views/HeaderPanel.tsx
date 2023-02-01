@@ -28,8 +28,8 @@ const HeaderPanel = () => {
 
       <RightPanelContainer>
         {viewMode === TRViewMode.CANVAS && <CanvasMenu Room={components.TopMenu} />}
-        {viewMode === TRViewMode.VIDEO && <div>video</div>}
-        {viewMode === TRViewMode.DOC && <div>document</div>}
+        {/* {viewMode === TRViewMode.VIDEO && <div>video</div>}
+        {viewMode === TRViewMode.DOC && <div>document</div>} */}
       </RightPanelContainer>
     </HeaderPanelContainer>
   );
