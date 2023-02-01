@@ -7,7 +7,6 @@ import PanelFooter from './PanelFooter';
 import PanelHeader from './PanelHeader';
 
 export interface BlockPanelDesktopProps {
-  handlePlayClick: (blockId?: string) => void;
   handleCreateTextBlock: (text: string) => void;
   handleLanguageClick?: () => void;
   components?: {
@@ -19,7 +18,6 @@ export interface BlockPanelDesktopProps {
 const PANEL_OFFSET = 285;
 
 export const BlockPanelDesktop = ({
-  handlePlayClick,
   handleCreateTextBlock,
   handleLanguageClick,
   components,
@@ -78,13 +76,7 @@ export const BlockPanelDesktop = ({
               totalTime={totalTime}
               togglePanel={app.togglePanel}
             />
-            {panelOpen && (
-              <BlockList
-                handlePlayClick={handlePlayClick}
-                isRecording={isRecording}
-                EmptyVoiceNote={components?.EmptyVoiceNote}
-              />
-            )}
+            {panelOpen && <BlockList isRecording={isRecording} EmptyVoiceNote={components?.EmptyVoiceNote} />}
             {panelOpen && (
               <PanelFooter
                 isRecording={isRecording}

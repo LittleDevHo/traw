@@ -1,7 +1,7 @@
 import { useTrawApp } from 'hooks';
 import React from 'react';
 import { styled } from 'stitches.config';
-import { TRViewMode } from 'types';
+import { PlayModeType, TrawSnapshot, TRViewMode } from 'types';
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
@@ -17,12 +17,18 @@ const ToggleButtonLabel = {
 const ViewToggleGroup = () => {
   const app = useTrawApp();
 
-  const viewMode = app.useStore((state) => state.ui.mode);
+  const viewMode = app.useStore((state: TrawSnapshot) => state.ui.mode);
+
+  const isPlaying = app.useStore((state: TrawSnapshot) => state.player.mode === PlayModeType.PLAYING);
 
   const { isBrowser } = useDeviceDetect();
 
   const handleClicked = (mode: TRViewMode) => {
     if (!mode) return;
+
+    if (isPlaying) {
+      app.backToEditor();
+    }
 
     app.toggleViewMode(mode);
   };

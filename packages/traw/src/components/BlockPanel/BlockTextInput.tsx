@@ -52,7 +52,7 @@ const BlockTextInput = ({ blockId, originText, endEditMode }: BlockTextInputProp
     <>
       <textarea
         ref={textareaRef}
-        className="text-sm rounded-md m-1 transition-colors bg-traw-grey-50 w-full resize-none"
+        className="text-sm rounded-md px-0.5 py-1 transition-colors bg-traw-grey-50 w-full resize-none "
         value={newValue}
         onChange={handleBlockTextChange}
         onBlur={handleEditEnd}

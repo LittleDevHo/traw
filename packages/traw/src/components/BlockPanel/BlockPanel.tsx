@@ -7,7 +7,6 @@ import BlockPanelDesktop from './BlockPanel.Desktop';
 import BlockPanelMobile from './BlockPanel.Mobile';
 
 export interface BlockPanelProps {
-  handlePlayClick: (blockId?: string) => void;
   handleLanguageClick?: () => void;
   components?: {
     EmptyVoiceNote?: ReactNode;
@@ -15,7 +14,7 @@ export interface BlockPanelProps {
   };
 }
 
-export const BlockPanel = ({ handlePlayClick, handleLanguageClick, components }: BlockPanelProps) => {
+export const BlockPanel = ({ handleLanguageClick, components }: BlockPanelProps) => {
   const { isBrowser } = useDeviceDetect();
 
   const app = useTrawApp();
@@ -41,14 +40,12 @@ export const BlockPanel = ({ handlePlayClick, handleLanguageClick, components }:
 
   return isBrowser ? (
     <BlockPanelDesktop
-      handlePlayClick={handlePlayClick}
       handleCreateTextBlock={handleCreateTextBlock}
       handleLanguageClick={handleLanguageClick}
       components={components}
     />
   ) : (
     <BlockPanelMobile
-      handlePlayClick={handlePlayClick}
       handleCreateTextBlock={handleCreateTextBlock}
       handleLanguageClick={handleLanguageClick}
       components={components}

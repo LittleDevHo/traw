@@ -1,45 +1,29 @@
 import classNames from 'classnames';
+import { UserAvatar } from 'components/Avatar';
 
 import { useTrawApp } from 'hooks';
+import usePlay from 'hooks/usePlay';
 import moment from 'moment';
-import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { styled } from 'stitches.config';
 import { TrawSnapshot } from 'types';
-import { UserAvatar } from '../Avatar/Avatar';
-import BlockItemMenu from './BlockItemMenu';
-import BlockTextInput from './BlockTextInput';
 
-export interface BlockItemProps {
-  userId: string;
-  blockId: string;
-  date: string | number;
-  blockText: string;
-  isVoiceBlock: boolean;
-  hideUserName?: boolean;
-  isPlaying?: boolean;
-  beforeBlockUserId: string;
-  highlightText?: string;
-  handlePlayClick: (blockId: string) => void;
-}
+import { BlockItemProps } from './BlockItem';
+import BlockItemMenu from '../BlockItemMenu';
+import BlockTextInput from '../BlockTextInput';
 
-export const BlockItem = memo(
-  ({
-    userId,
-    blockId,
-    date,
-    isVoiceBlock,
-    blockText,
-    isPlaying,
-    beforeBlockUserId,
-    highlightText,
-    handlePlayClick,
-  }: BlockItemProps) => {
+export const VideoBlockItem = memo(
+  ({ userId, blockId, date, isVoiceBlock, blockText, isPlaying, beforeBlockUserId, highlightText }: BlockItemProps) => {
     const trawApp = useTrawApp();
 
     const user = trawApp.useStore((state: TrawSnapshot) => state.users[userId]);
     const editorId = trawApp.useStore((state: TrawSnapshot) => state.user.id);
+
     const showBlockMenu = editorId === userId;
 
     const [editMode, setEditMode] = useState(false);
+
+    const { handlePlayClick } = usePlay();
 
     const dateStr = useMemo(() => {
       if (typeof date === 'string') {
@@ -90,23 +74,7 @@ export const BlockItem = memo(
 
         <div className={classNames('flex', 'flex-1', 'align-start', 'justify-between')}>
           {!editMode ? (
-            <span
-              className={classNames(
-                'text-sm',
-                'rounded-md',
-                'py-1',
-                'px-0.5',
-                'transition-colors',
-                'break-all',
-                'whitespace-pre-wrap',
-                {
-                  'cursor-pointer': isVoiceBlock,
-                  'hover:bg-traw-grey-50': isVoiceBlock,
-                  'bg-traw-purple-light': isPlaying,
-                },
-              )}
-              onClick={onClick}
-            >
+            <StyledTextContainer isVoiceBlock={isVoiceBlock} isPlaying={isPlaying} onClick={onClick}>
               {highlightText
                 ? blockText.split(new RegExp(`(${highlightText})`, 'gi')).map((part, i) => (
                     <span
@@ -121,7 +89,7 @@ export const BlockItem = memo(
                     </span>
                   ))
                 : `${blockText}` || '[Empty]'}
-            </span>
+            </StyledTextContainer>
           ) : (
             <BlockTextInput blockId={blockId} originText={blockText} endEditMode={handleToggleEditMode} />
           )}
@@ -134,6 +102,37 @@ export const BlockItem = memo(
   },
 );
 
-BlockItem.displayName = 'BlockItem';
+const StyledTextContainer = styled('span', {
+  fontSize: '$2',
+  color: '$textPrimary',
+  borderRadius: '6px',
+  padding: '0.5px 4px',
+  transitionProperty: 'color, background-color, border-color, text-decoration-color, fill, stroke',
+  transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  transitionDuration: '150ms',
+  wordBreak: 'break-all',
+  whiteSpace: 'pre-wrap',
 
-export default BlockItem;
+  variants: {
+    isVoiceBlock: {
+      true: {
+        cursor: 'pointer',
+        '&:hover': {
+          backgroundColor: '$traw-grey-50',
+        },
+      },
+      false: {},
+    },
+
+    isPlaying: {
+      true: {
+        backgroundColor: '$traw-purple-light',
+      },
+      false: {},
+    },
+  },
+});
+
+VideoBlockItem.displayName = 'VideoBlockItem';
+
+export default VideoBlockItem;

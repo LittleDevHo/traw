@@ -1,5 +1,6 @@
 import { useTrawApp } from 'hooks';
 import React from 'react';
+import { styled } from 'stitches.config';
 import { TRViewMode } from 'types';
 import CanvasView from './CanvasView';
 import DocView from './DocView';
@@ -16,7 +17,14 @@ const Views = () => {
 
   const viewMode = app.useStore((state) => state.ui.mode);
 
-  return <>{React.createElement(ViewComponentMap[viewMode])}</>;
+  return <ViewContainer>{React.createElement(ViewComponentMap[viewMode])}</ViewContainer>;
 };
+
+const ViewContainer = styled('div', {
+  display: 'flex',
+  paddingTop: 59,
+  height: '100%',
+  flex: 1,
+});
 
 export default Views;

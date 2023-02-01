@@ -10,6 +10,7 @@ module.exports = {
         traw: {
           'purple-light': '#ACAAFF',
           purple: '#726EF6', //primary.main
+          'purple-dark': '#8F93B5',
           sky: '#E6EBFC', //divider
           pink: '#E983B2', //secondary.main
           'grey-10': '#DCE0EC',

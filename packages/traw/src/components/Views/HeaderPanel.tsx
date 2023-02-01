@@ -7,6 +7,7 @@ import React from 'react';
 import { styled } from 'stitches.config';
 import { TRViewMode } from 'types';
 import ViewToggleGroup from './ViewToggleGroup';
+import { VideoMenu } from 'components/VideoMenu';
 
 const HeaderPanel = () => {
   const app = useTrawApp();
@@ -28,7 +29,8 @@ const HeaderPanel = () => {
 
       <RightPanelContainer>
         {viewMode === TRViewMode.CANVAS && <CanvasMenu Room={components.TopMenu} />}
-        {/* {viewMode === TRViewMode.VIDEO && <div>video</div>}
+        {viewMode === TRViewMode.VIDEO && <VideoMenu />}
+        {/* 
         {viewMode === TRViewMode.DOC && <div>document</div>} */}
       </RightPanelContainer>
     </HeaderPanelContainer>

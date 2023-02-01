@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { Editor } from 'components/Editor';
 
 import { useTrawApp } from 'hooks';
 import moment from 'moment';

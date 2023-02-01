@@ -1,28 +1,24 @@
 import DocumentView from 'components/Doc/DocumentView';
-import Title from 'components/DocumentMenuPanel/Title';
 import { useTrawApp } from 'hooks';
-import { useTRFunctionsContext } from 'hooks/useCustomFunctions';
 import React, { useEffect } from 'react';
 
 const DocView = () => {
   const app = useTrawApp();
   const state = app.useStore();
   const { document } = state;
-  const functions = useTRFunctionsContext();
 
   useEffect(() => {
     app.updateBlockViewportMap();
   }, [app]);
 
   return (
-    <div className="w-full h-full absolute bg-traw-grey-50 overflow-scroll">
-      <div className="w-full overflow-auto">
-        <div className="ml-[50%] translate-x-[-50%] max-w-[720px] px-[20px] flex pt-16 flex-col justify-start bg-white overflow-auto pb-8">
-          <Title
-            title={document.name}
-            canEdit={document.canEdit}
-            handleChangeTitle={functions?.handleChangeDocumentTitle}
-          />
+    <div className="w-full h-full  bg-traw-purple-dark overflow-scroll relative pt-7">
+      <div className="w-full overflow-auto flex justify-center ">
+        <div className="max-w-[720px] px-[20px] flex flex-col justify-start bg-white overflow-auto pb-8">
+          <h1 className="overflow-hidden text-ellipsis text-3xl font-bold  text-traw-grey-dark text-center mb-6 mt-5">
+            {document.name}
+          </h1>
+
           <DocumentView />
         </div>
       </div>

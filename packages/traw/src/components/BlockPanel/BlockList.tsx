@@ -1,23 +1,24 @@
-import BlockItem from 'components/BlockPanel/BlockItem';
+import BlockItem from 'components/BlockPanel/BlockItem/BlockItem';
 import { useTrawApp } from 'hooks';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import { PlayModeType, TrawSnapshot } from 'types';
+import { PlayModeType, TrawSnapshot, TRViewMode } from 'types';
 import { useEventListener, useIsomorphicLayoutEffect } from 'usehooks-ts';
 import EmptyBlockPanel from './EmptyBlockPanel';
 import ScrollToBottomButton from './ScrollToBottomButton';
 export interface BlockListProps {
-  handlePlayClick: (blockId: string) => void;
   isRecording: boolean;
   EmptyVoiceNote?: React.ReactNode;
 }
 
-export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote }: BlockListProps) {
+export default function BlockList({ isRecording, EmptyVoiceNote }: BlockListProps) {
   const app = useTrawApp();
 
   const query = app.useStore((state) => state.editor.search.query);
   const blocks = app.useStore((state: TrawSnapshot) => state.blocks);
   const mode = app.useStore((state: TrawSnapshot) => state.player.mode);
+
+  const viewMode = app.useStore((state: TrawSnapshot) => state.ui.mode);
 
   const targetBlockId = app.useStore((state: TrawSnapshot) =>
     state.player.mode === PlayModeType.PLAYING ? state.player.targetBlockId : undefined,
@@ -130,7 +131,7 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
   }
 
   if (sortedFilteredBlocks.length === 0 && !isRecording) {
-    return <EmptyBlockPanel EmptyVoiceNote={EmptyVoiceNote} />;
+    return <EmptyBlockPanel EmptyVoiceNote={EmptyVoiceNote} hideEmptyContents={viewMode !== TRViewMode.CANVAS} />;
   }
 
   return (
@@ -156,7 +157,6 @@ export default function BlockList({ handlePlayClick, isRecording, EmptyVoiceNote
               blockText={block.text}
               isPlaying={targetBlockId === block.id}
               isVoiceBlock={block.voices.length > 0}
-              handlePlayClick={handlePlayClick}
               highlightText={query || undefined}
               beforeBlockUserId={sortedFilteredBlocks[index - 1]?.userId}
             />
