@@ -105,6 +105,7 @@ export type TrawSnapshot = {
       isSearching: boolean;
       query: string;
     };
+    currentFrame?: string;
   };
   ui: {
     mode: TRViewMode;

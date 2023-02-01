@@ -30,6 +30,8 @@ export function KeyboardShortcutDialog({ onOpenChange }: { onOpenChange?: (open:
       { label: 'Zoom to 100%', kbd: '⇧+0' },
       { label: 'Zoom to Fit', kbd: '⇧+1' },
       { label: 'Zoom to Selection', kbd: '⇧+2' },
+      { label: 'Zoom to Next Image', kbd: 'PgUp' },
+      { label: 'Zoom to Prev Image', kbd: 'PgDn' },
       // { label: intl.formatMessage({ id: 'preferences.dark.mode' }), kbd: '#⇧D' },
       // { label: intl.formatMessage({ id: 'preferences.focus.mode' }), kbd: '#.' },
       // { label: intl.formatMessage({ id: 'preferences.show.grid' }), kbd: '#⇧G' },

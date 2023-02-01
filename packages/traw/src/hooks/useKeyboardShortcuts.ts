@@ -700,4 +700,24 @@ export function useKeyboardShortcuts(ref: React.RefObject<HTMLDivElement>) {
     undefined,
     [trawApp],
   );
+
+  useHotkeys(
+    'pagedown',
+    () => {
+      if (!canHandleEvent()) return;
+      trawApp.navigateFrame('next');
+    },
+    undefined,
+    [trawApp],
+  );
+
+  useHotkeys(
+    'pageup',
+    () => {
+      if (!canHandleEvent()) return;
+      trawApp.navigateFrame('prev');
+    },
+    undefined,
+    [trawApp],
+  );
 }

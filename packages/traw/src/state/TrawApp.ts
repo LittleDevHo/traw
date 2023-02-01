@@ -1,4 +1,4 @@
-import { TDAsset, TDToolType, TDUser, TLDR, TldrawApp, TldrawCommand, TldrawPatch } from '@tldraw/tldraw';
+import { TDAsset, TDShapeType, TDToolType, TDUser, TLDR, TldrawApp, TldrawCommand, TldrawPatch } from '@tldraw/tldraw';
 import debounce from 'lodash/debounce';
 import { nanoid } from 'nanoid';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
@@ -409,12 +409,14 @@ export class TrawApp {
       };
   }
 
-  zoomToSelection = () => {
+  zoomToSelection = (customSelectedIds?: string[]) => {
     const FIT_TO_SCREEN_PADDING = 100;
     const { selectedIds, shapes } = this.app;
     const padding = this.padding;
 
-    const selectedShapes = shapes.filter((shape) => selectedIds.includes(shape.id));
+    const selected = customSelectedIds || selectedIds;
+
+    const selectedShapes = shapes.filter((shape) => selected.includes(shape.id));
     if (selectedShapes.length === 0) return this;
     const { rendererBounds } = this.app;
 
@@ -1583,5 +1585,44 @@ export class TrawApp {
         state.ui.mode = mode;
       }),
     );
+  };
+
+  navigateFrame = (direction: 'next' | 'prev') => {
+    const { shapes } = this.app;
+    let currentFrame = this.store.getState().editor.currentFrame;
+    const sortedShapes = shapes
+      .filter((a) => a.type === TDShapeType.Image)
+      .sort((a, b) => a.point[1] * 100 + a.point[0] - (b.point[1] * 100 + b.point[0]));
+
+    if (currentFrame && !sortedShapes.filter((shape) => shape.id === currentFrame).length) currentFrame = undefined;
+
+    let newFrame: string;
+    if (!currentFrame) {
+      newFrame = sortedShapes[0].id;
+    } else {
+      const currentIndex = sortedShapes.findIndex((shape) => shape.id === currentFrame);
+      if (direction === 'next') {
+        if (currentIndex < sortedShapes.length - 1) {
+          newFrame = sortedShapes[currentIndex + 1].id;
+        } else {
+          newFrame = sortedShapes[0].id;
+        }
+      } else {
+        if (currentIndex > 0) {
+          newFrame = sortedShapes[currentIndex - 1].id;
+        } else {
+          newFrame = sortedShapes[sortedShapes.length - 1].id;
+        }
+      }
+    }
+
+    this.zoomToSelection([newFrame]);
+    this.store.setState(
+      produce((state) => {
+        state.editor.currentFrame = newFrame;
+      }),
+    );
+
+    console.log('navigateImages', direction);
   };
 }
