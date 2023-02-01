@@ -44,7 +44,7 @@ const StyledInputLabel = styled('label', {
   verticalAlign: 'top',
   alignItems: 'center',
   position: 'relative',
-  maxWidth: 130,
+  maxWidth: 110,
   userSelect: 'none',
 
   variants: {
