@@ -731,6 +731,7 @@ export class TrawApp {
       }),
     );
     this._actionStartTime = 0;
+    this.pointer += records.length;
   };
 
   /**
@@ -815,10 +816,11 @@ export class TrawApp {
     const sortedRecords = this.sortedRecords;
 
     // Inclusive index
+    let start = this.pointer;
     const end = endIndex ?? sortedRecords.length - 1;
 
-    let start = this.pointer;
-    if (start > end + 1) {
+    if (endIndex !== undefined && endIndex + 1 < start) {
+      // Play from the back
       this.app.resetDocument();
       start = 0;
     }
