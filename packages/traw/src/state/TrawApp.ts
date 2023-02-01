@@ -231,6 +231,7 @@ export class TrawApp {
       document,
       records: recordMap,
       blocks: {},
+      blockViewportMap: {},
       users: {},
       playerOptions,
     };
@@ -730,6 +731,7 @@ export class TrawApp {
       }),
     );
     this._actionStartTime = 0;
+    this.pointer += records.length;
   };
 
   /**
@@ -814,10 +816,11 @@ export class TrawApp {
     const sortedRecords = this.sortedRecords;
 
     // Inclusive index
+    let start = this.pointer;
     const end = endIndex ?? sortedRecords.length - 1;
 
-    let start = this.pointer;
-    if (start > end + 1) {
+    if (endIndex !== undefined && endIndex + 1 < start) {
+      // Play from the back
       this.app.resetDocument();
       start = 0;
     }
@@ -1587,6 +1590,36 @@ export class TrawApp {
     );
   };
 
+  updateBlockViewportMap = () => {
+    const sortedBlocks = this.sortedBlocks;
+    const records = this.store.getState().records;
+    const cameraRecords = Object.values(records)
+      .filter((r) => r.type === 'zoom')
+      .sort((a, b) => a.start - b.start);
+
+    if (sortedBlocks.length === 0 || cameraRecords.length === 0) return;
+
+    const blockViewportMap: Record<string, string> = {};
+
+    let pointer = 0;
+    let currentCamera = cameraRecords[pointer];
+
+    sortedBlocks.forEach((block) => {
+      while (currentCamera && currentCamera.end < block.time) {
+        pointer++;
+        currentCamera = cameraRecords[pointer];
+      }
+
+      blockViewportMap[block.id] = currentCamera?.id || '';
+    });
+
+    this.store.setState(
+      produce((state) => {
+        state.blockViewportMap = blockViewportMap;
+      }),
+    );
+  };
+
   navigateFrame = (direction: 'next' | 'prev') => {
     const { shapes } = this.app;
     let currentFrame = this.store.getState().editor.currentFrame;
@@ -1622,7 +1655,5 @@ export class TrawApp {
         state.editor.currentFrame = newFrame;
       }),
     );
-
-    console.log('navigateImages', direction);
   };
 }
