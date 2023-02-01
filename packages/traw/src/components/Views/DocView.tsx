@@ -9,7 +9,7 @@ const DocView = () => {
   const { document } = state;
 
   return (
-    <div className="flex flex-1 h-full justify-center bg-traw-purple-dark pt-0 md:pt-4">
+    <div className="flex flex-1 h-full justify-center bg-traw-purple-dark pt-4">
       <div className="w-screen md:max-w-[720px] px-[20px] flex flex-1 pt-4  flex-col justify-start bg-white">
         <h1 className="overflow-hidden text-ellipsis text-3xl font-bold  text-traw-grey-dark text-center mb-6 mt-5">
           {document.name}

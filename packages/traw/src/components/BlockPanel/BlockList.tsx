@@ -2,7 +2,7 @@ import BlockItem from 'components/BlockPanel/BlockItem/BlockItem';
 import { useTrawApp } from 'hooks';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import { PlayModeType, TrawSnapshot } from 'types';
+import { PlayModeType, TrawSnapshot, TRViewMode } from 'types';
 import { useEventListener, useIsomorphicLayoutEffect } from 'usehooks-ts';
 import EmptyBlockPanel from './EmptyBlockPanel';
 import ScrollToBottomButton from './ScrollToBottomButton';
@@ -17,6 +17,8 @@ export default function BlockList({ isRecording, EmptyVoiceNote }: BlockListProp
   const query = app.useStore((state) => state.editor.search.query);
   const blocks = app.useStore((state: TrawSnapshot) => state.blocks);
   const mode = app.useStore((state: TrawSnapshot) => state.player.mode);
+
+  const viewMode = app.useStore((state: TrawSnapshot) => state.ui.mode);
 
   const targetBlockId = app.useStore((state: TrawSnapshot) =>
     state.player.mode === PlayModeType.PLAYING ? state.player.targetBlockId : undefined,
@@ -129,7 +131,7 @@ export default function BlockList({ isRecording, EmptyVoiceNote }: BlockListProp
   }
 
   if (sortedFilteredBlocks.length === 0 && !isRecording) {
-    return <EmptyBlockPanel EmptyVoiceNote={EmptyVoiceNote} />;
+    return <EmptyBlockPanel EmptyVoiceNote={EmptyVoiceNote} hideEmptyContents={viewMode !== TRViewMode.CANVAS} />;
   }
 
   return (
