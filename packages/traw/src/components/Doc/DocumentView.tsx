@@ -7,18 +7,13 @@ export default function DocumentView() {
   const app = useTrawApp();
 
   const query = app.useStore((state) => state.editor.search.query);
-  const blocks = app.useStore((state: TrawSnapshot) => state.blocks);
   const blockViewportMap = app.useStore((state: TrawSnapshot) => state.blockViewportMap);
 
   const targetBlockId = app.useStore((state: TrawSnapshot) =>
     state.player.mode === PlayModeType.PLAYING ? state.player.targetBlockId : undefined,
   );
 
-  const sortedBlocks = useMemo(() => {
-    return Object.values(blocks)
-      .filter((block) => block.isActive)
-      .sort((a, b) => a.time - b.time);
-  }, [blocks]);
+  const sortedBlocks = app.sortedBlocks;
 
   const sortedFilteredBlocks = useMemo(() => {
     if (query) {

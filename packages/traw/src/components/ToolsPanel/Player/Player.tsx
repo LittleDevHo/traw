@@ -18,9 +18,7 @@ const Player = () => {
 
   const timerRef = useRef<any>();
 
-  const blocks = app.useStore((state) => state.blocks);
-
-  const sortedBlocks = useMemo(() => Object.values(blocks).sort((a, b) => a.time - b.time), [blocks]);
+  const sortedBlocks = app.sortedBlocks;
 
   const getBlockDuration = useCallback(
     (block: TRBlock): number => {
