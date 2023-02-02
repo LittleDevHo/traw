@@ -63,7 +63,7 @@ export const VideoBlockItem = memo(
     return (
       <div className="bg-white w-full">
         {beforeBlockUserId === userId ? null : (
-          <div className="flex flex-1 flex-row items-center w-full grow gap-1 mt-3 mb-1">
+          <div className="flex flex-1 flex-row items-center w-full grow gap-1 [&:not(:first-child)]:mt-3 mb-1">
             <div className="flex relative">
               {user && <UserAvatar avatarUrl={user.profileUrl} userName={user.name} size={15} />}
             </div>
