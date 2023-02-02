@@ -18,7 +18,7 @@ export const CanvasBlockItem = memo(
     const user = trawApp.useStore((state: TrawSnapshot) => state.users[userId]);
     const editorId = trawApp.useStore((state: TrawSnapshot) => state.user.id);
 
-    const showBlockMenu = editorId === userId;
+    const isOwner = editorId === userId;
 
     const [editMode, setEditMode] = useState(false);
 
@@ -49,6 +49,12 @@ export const CanvasBlockItem = memo(
       setEditMode(!editMode);
     };
 
+    const handleBlockClick = () => {
+      if (editorId === userId) {
+        setEditMode(true);
+      }
+    };
+
     const handleDeleteBlock = () => {
       trawApp.deleteBlock(blockId);
     };
@@ -67,7 +73,7 @@ export const CanvasBlockItem = memo(
 
         <div className={classNames('flex', 'flex-1', 'align-start', 'justify-between')}>
           {!editMode ? (
-            <StyledTextContainer onClick={handleToggleEditMode}>
+            <StyledTextContainer onClick={handleBlockClick} isOwner={isOwner}>
               {highlightText
                 ? blockText.split(new RegExp(`(${highlightText})`, 'gi')).map((part, i) => (
                     <span
@@ -86,7 +92,7 @@ export const CanvasBlockItem = memo(
           ) : (
             <BlockTextInput blockId={blockId} originText={blockText} endEditMode={handleToggleEditMode} />
           )}
-          {showBlockMenu && (
+          {isOwner && (
             <BlockItemMenu handleToggleEditMode={handleToggleEditMode} handleDeleteBlock={handleDeleteBlock} />
           )}
         </div>
@@ -105,9 +111,17 @@ const StyledTextContainer = styled('span', {
   transitionDuration: '150ms',
   wordBreak: 'break-all',
   whiteSpace: 'pre-wrap',
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: '$traw-grey-50',
+
+  variants: {
+    isOwner: {
+      true: {
+        cursor: 'pointer',
+        '&:hover': {
+          backgroundColor: '$traw-grey-50',
+        },
+      },
+      false: {},
+    },
   },
 });
 
