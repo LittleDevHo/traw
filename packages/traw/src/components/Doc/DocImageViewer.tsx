@@ -30,7 +30,7 @@ const DocImageViewer = ({ time, userId }: DocImageViewerProps) => {
   return (
     <div className="aspect-video flex relative">
       <TrawContext.Provider value={trawApp}>
-        <Editor />
+        <Editor readOnly />
       </TrawContext.Provider>
     </div>
   );

@@ -537,9 +537,11 @@ export const Editor = ({ components, functions, readOnly }: EditorProps) => {
             showPages={false}
             components={components}
             functions={functions}
-            readOnly={readOnly}
           />
         </AnimationFactory>
+        {readOnly && (
+          <div className="absolute left-0 right-0 top-0 bottom-0 bg-transparent w-full h-full z-50 bg-grey-100" />
+        )}
       </div>
     </div>
   );
