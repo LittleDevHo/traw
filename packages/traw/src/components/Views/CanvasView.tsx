@@ -3,6 +3,7 @@ import { Editor } from 'components/Editor';
 import { SlideListPanel } from 'components/SlideListPanel';
 import { ToolsPanel } from 'components/ToolsPanel';
 import { HelpPanel } from 'components/ToolsPanel/HelpPanel';
+import StopButton from 'components/ToolsPanel/StopButton';
 import { useTrawApp } from 'hooks';
 import { useTRComponentsContext } from 'hooks/useCustomComponent';
 import { useTRFunctionsContext } from 'hooks/useCustomFunctions';
@@ -18,6 +19,8 @@ const CanvasView = () => {
 
   const isPlayerMode = trawApp.useStore((state) => state.playerOptions?.isPlayerMode);
   const readOnly = isPlayerMode || (document && !document.canEdit) ? true : false;
+
+  const { isRecording } = trawApp.useStore((state) => state.recording);
 
   const { speechRecognitionLanguage } = trawApp.useStore((state) => state.recording);
   const handleLanguageClickDefault = useCallback(() => {
@@ -46,6 +49,7 @@ const CanvasView = () => {
         {!isPlayerMode && <SlideListPanel />}
         <ToolsPanel />
       </StyledUI>
+      {isRecording && <StopButton />}
     </div>
   );
 };
