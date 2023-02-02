@@ -789,8 +789,12 @@ export class TrawApp {
   };
 
   get sortedBlocks() {
-    if (this._sortedBlocks) return this._sortedBlocks;
+    if (this._sortedBlocks) {
+      // Cache hit
+      return this._sortedBlocks;
+    }
 
+    // Cache miss
     const sortedBlocks = Object.values(this.store.getState().blocks)
       .filter((block) => block.isActive && block.type === 'TALK')
       .sort((a, b) => a.time - b.time);
@@ -1232,7 +1236,6 @@ export class TrawApp {
 
   createBlock = (block: TRBlock) => {
     this.clearCachedSortedBlocks();
-    this._sortedBlocks = [];
 
     this.store.setState(
       produce((state) => {
