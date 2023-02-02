@@ -192,7 +192,7 @@ export class TrawApp {
         volume: mute ? 0 : 1,
         loop: !!playerOptions.loop,
         totalTime: 0,
-        isDone: false,
+        isDone: true,
         animations: {},
         speed: 1,
       },
