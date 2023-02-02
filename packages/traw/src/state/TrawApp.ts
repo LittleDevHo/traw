@@ -792,7 +792,7 @@ export class TrawApp {
     if (this._sortedBlocks) return this._sortedBlocks;
 
     const sortedBlocks = Object.values(this.store.getState().blocks)
-      .filter((block) => block.isActive)
+      .filter((block) => block.isActive && block.type === 'TALK')
       .sort((a, b) => a.time - b.time);
 
     this._sortedBlocks = sortedBlocks;
@@ -1258,7 +1258,7 @@ export class TrawApp {
       produce((state) => {
         blocks.forEach((block) => {
           state.blocks[block.id] = block;
-          if (block.isActive) totalTime += block.voiceEnd - block.voiceStart;
+          if (block.isActive && block.type === 'TALK') totalTime += block.voiceEnd - block.voiceStart;
         });
         state.player.totalTime = totalTime;
       }),

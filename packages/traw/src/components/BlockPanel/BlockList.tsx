@@ -35,11 +35,7 @@ export default function BlockList({ isRecording, EmptyVoiceNote }: BlockListProp
 
   const [height, setHeight] = useState(0);
 
-  const sortedBlocks = useMemo(() => {
-    return Object.values(blocks)
-      .filter((block) => block.isActive)
-      .sort((a, b) => a.time - b.time);
-  }, [blocks]);
+  const sortedBlocks = app.sortedBlocks;
 
   const sortedFilteredBlocks = useMemo(() => {
     if (query) {
@@ -47,6 +43,7 @@ export default function BlockList({ isRecording, EmptyVoiceNote }: BlockListProp
     }
     return sortedBlocks;
   }, [query, sortedBlocks]);
+
   const [beforeBlockLength, setBeforeBlockLength] = useState(sortedFilteredBlocks.length);
 
   const handleResize = useCallback(() => {

@@ -1,5 +1,5 @@
 import { useTrawApp } from 'hooks';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { styled } from 'stitches.config';
 import { breakpoints } from 'utils/breakpoints';
 
@@ -10,9 +10,7 @@ const Subtitle = () => {
 
   const { targetBlockId } = app.useStore((state) => state.player);
 
-  const blocks = app.useStore((state) => state.blocks);
-
-  const sortedBlocks = useMemo(() => Object.values(blocks).sort((a, b) => a.time - b.time), [blocks]);
+  const sortedBlocks = app.sortedBlocks;
 
   const block = sortedBlocks.find((block) => block.id === targetBlockId);
   if (!block || !block.text) return null;
