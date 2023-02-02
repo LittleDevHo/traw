@@ -20,6 +20,7 @@ const ViewToggleGroup = () => {
   const viewMode = app.useStore((state: TrawSnapshot) => state.ui.mode);
 
   const isPlaying = app.useStore((state: TrawSnapshot) => state.player.mode === PlayModeType.PLAYING);
+  const isRecording = app.useStore((state: TrawSnapshot) => state.recording.isRecording);
 
   const { isBrowser } = useDeviceDetect();
 
@@ -50,24 +51,26 @@ const ViewToggleGroup = () => {
           ))}
         </ToggleButtonGroup>
       ) : (
-        <DropdownMenu.Root>
-          <DropdownTriggerButton dir="ltr" id="View-Mode">
-            {viewMode}
-          </DropdownTriggerButton>
-          <DMContent align="center">
-            <DropdownMenu.DropdownMenuRadioGroup
-              value={viewMode}
-              aria-label="Toggle View"
-              onValueChange={(value: string) => handleClicked(value as TRViewMode)}
-            >
-              {Object.values(TRViewMode).map((value: TRViewMode, index: number) => (
-                <StyledDMRadioItem key={index} value={value} aria-label={`${value} mode`}>
-                  {ToggleButtonLabel[value]}
-                </StyledDMRadioItem>
-              ))}
-            </DropdownMenu.DropdownMenuRadioGroup>
-          </DMContent>
-        </DropdownMenu.Root>
+        !isRecording && (
+          <DropdownMenu.Root>
+            <DropdownTriggerButton dir="ltr" id="View-Mode">
+              {viewMode}
+            </DropdownTriggerButton>
+            <DMContent align="center">
+              <DropdownMenu.DropdownMenuRadioGroup
+                value={viewMode}
+                aria-label="Toggle View"
+                onValueChange={(value: string) => handleClicked(value as TRViewMode)}
+              >
+                {Object.values(TRViewMode).map((value: TRViewMode, index: number) => (
+                  <StyledDMRadioItem key={index} value={value} aria-label={`${value} mode`}>
+                    {ToggleButtonLabel[value]}
+                  </StyledDMRadioItem>
+                ))}
+              </DropdownMenu.DropdownMenuRadioGroup>
+            </DMContent>
+          </DropdownMenu.Root>
+        )
       )}
     </ToggleButtonContainer>
   );
