@@ -1,4 +1,11 @@
-import { ArrowTopRightIcon, CursorArrowIcon, Pencil1Icon, PlusIcon, TextIcon } from '@radix-ui/react-icons';
+import {
+  ArrowTopRightIcon,
+  CursorArrowIcon,
+  Pencil1Icon,
+  ImageIcon,
+  TextIcon,
+  FilePlusIcon,
+} from '@radix-ui/react-icons';
 import * as React from 'react';
 import { breakpoints } from 'utils/breakpoints';
 
@@ -16,6 +23,7 @@ import { styled } from 'stitches.config';
 import { ActionButton } from './ActionButton';
 import { ShapesMenu } from './ShapesMenu';
 import { StyleMenu } from './StyleMenu';
+import TemplateIcon from 'icons/SvgTemplate';
 
 const activeToolSelector = (s: TDSnapshot) => s.appState.activeTool;
 const toolLockedSelector = (s: TDSnapshot) => s.appState.isToolLocked;
@@ -56,9 +64,12 @@ export const PrimaryTools = React.memo(function PrimaryTools() {
   //   app.selectTool(TDShapeType.Sticky);
   // }, [app]);
 
-  const uploadMedias = React.useCallback(async () => {
-    trawApp.openAsset();
-  }, [trawApp]);
+  const uploadMedias = React.useCallback(
+    async (type: string) => {
+      trawApp.openAsset(type);
+    },
+    [trawApp],
+  );
 
   const undo = React.useCallback(() => {
     app.undo();
@@ -135,8 +146,29 @@ export const PrimaryTools = React.memo(function PrimaryTools() {
       >
         <Pencil2Icon />
       </ToolButtonWithTooltip> */}
-      <ToolButtonWithTooltip variant="primary" label={'import'} onClick={uploadMedias} id="TD-PrimaryTools-Import">
-        <PlusIcon />
+      <ToolButtonWithTooltip
+        variant="primary"
+        label={'image'}
+        onClick={() => uploadMedias('computer')}
+        id="TD-PrimaryTools-Image"
+      >
+        <ImageIcon />
+      </ToolButtonWithTooltip>
+      <ToolButtonWithTooltip
+        variant="primary"
+        label={'file'}
+        onClick={() => uploadMedias('computer')}
+        id="TD-PrimaryTools-File"
+      >
+        <FilePlusIcon />
+      </ToolButtonWithTooltip>
+      <ToolButtonWithTooltip
+        variant="primary"
+        label={'template'}
+        onClick={() => uploadMedias('traw')}
+        id="TD-PrimaryTools-Template"
+      >
+        <TemplateIcon />
       </ToolButtonWithTooltip>
       <Separator.Root className="SeparatorRoot mx-2 my-1 w-[2px]  bg-traw-grey" decorative orientation="vertical" />
       <ToolButtonWithTooltip label={'undo'} onClick={undo} id="TD-PrimaryTools-Undo" variant="undo">
