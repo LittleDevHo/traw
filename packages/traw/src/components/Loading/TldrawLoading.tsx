@@ -6,9 +6,6 @@ import { styled } from 'stitches.config';
 import { TrawSnapshot } from 'types';
 import { breakpoints } from 'utils/breakpoints';
 
-// import Lottie from 'lottie-react';
-// import LoadingAnimation from 'static/json/loading.json';
-
 const loadingSelector = (s: TDSnapshot) => s.appState.isLoading;
 
 export function TldrawLoading() {
