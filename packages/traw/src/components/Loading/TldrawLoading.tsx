@@ -19,7 +19,7 @@ export function TldrawLoading() {
   const isLoading = app.useStore(loadingSelector);
 
   return (
-    <StyledLoadingPanelContainer hidden={isLoading} isRecording={isRecording} bp={breakpoints}>
+    <StyledLoadingPanelContainer hidden={!isLoading} isRecording={isRecording} bp={breakpoints}>
       Loading...
     </StyledLoadingPanelContainer>
   );
