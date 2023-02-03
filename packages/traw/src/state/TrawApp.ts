@@ -152,11 +152,11 @@ export class TrawApp {
    */
   public onAssetCreate?: (app: TldrawApp, file: File, id: string) => Promise<string | false>;
 
-  public requestMedia: ((app: TldrawApp) => void) | undefined;
+  public requestMedia: ((app: TldrawApp, type: string) => void) | undefined;
 
-  openAsset = () => {
+  openAsset = (type?: string) => {
     if (this.requestMedia) {
-      this.requestMedia(this.app);
+      this.requestMedia(this.app, type ?? '');
     } else {
       this.app.openAsset();
     }
