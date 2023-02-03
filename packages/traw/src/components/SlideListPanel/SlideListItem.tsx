@@ -14,7 +14,7 @@ interface SlideListItemProps {
   page: TDPage;
   index: number;
   type: 'list' | 'preview';
-  size: 'xs' | 'sm' | 'md' | 'lg';
+  size: 'micro' | 'xs' | 'sm' | 'md' | 'lg';
 
   viewerCount?: number;
   selectState?: SlideListItemState;
@@ -24,9 +24,13 @@ interface SlideListItemProps {
 }
 
 const slidesViewport = {
-  xs: {
+  micro: {
     width: 105,
     height: 59,
+  },
+  xs: {
+    width: 180,
+    height: 101,
   },
   sm: {
     width: 375,
@@ -43,6 +47,7 @@ const slidesViewport = {
 };
 
 const slideSizes = {
+  micro: `w-[${slidesViewport.micro.width}px] `,
   xs: `w-[${slidesViewport.xs.width}px] `,
   sm: `w-[${slidesViewport.sm.width}px] `,
   md: `w-[${slidesViewport.md.width}px] `,

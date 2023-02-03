@@ -50,7 +50,7 @@ const SlideList = ({ canAddSlide, handleAddSlide, handleGridView }: SlideListPro
                 viewerCount={viewerCount}
                 selectState={page.id === currentPageId ? SlideListItemState.SELECTED : selectState}
                 type="list"
-                size="xs"
+                size="micro"
                 handleClick={handleSlideClick}
                 setRef={(ref) => {
                   slideRef.current[page.id] = ref;
