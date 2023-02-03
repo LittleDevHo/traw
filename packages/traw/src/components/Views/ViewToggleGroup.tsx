@@ -80,6 +80,7 @@ const ToggleButtonContainer = styled('div', {
   display: 'flex',
   margin: '0 auto',
   alignItems: 'center',
+  zIndex: 1000,
 });
 
 const ToggleButtonGroup = styled(ToggleGroup.Root, {});

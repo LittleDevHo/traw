@@ -6,6 +6,7 @@ import { PlayModeType, TrawSnapshot, TRViewMode } from 'types';
 import { useEventListener, useIsomorphicLayoutEffect } from 'usehooks-ts';
 import EmptyBlockPanel from './EmptyBlockPanel';
 import ScrollToBottomButton from './ScrollToBottomButton';
+
 export interface BlockListProps {
   isRecording: boolean;
   EmptyVoiceNote?: React.ReactNode;
