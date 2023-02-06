@@ -1660,6 +1660,11 @@ export class TrawApp {
         state.ui.mode = mode;
       }),
     );
+
+    this.emit(TrawEventType.ChangeViewMode, {
+      tldrawApp: this.app,
+      mode,
+    });
   };
 
   updateBlockViewportMap = () => {
