@@ -55,6 +55,7 @@ export enum PlayModeType {
   EDIT = 'EDIT',
   PREPARE = 'PREPARE',
   PLAYING = 'PLAYING',
+  LOADING = 'LOADING',
   PAUSE = 'PAUSE',
   STOP = 'STOP',
 }
