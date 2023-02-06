@@ -1341,46 +1341,115 @@ export class TrawApp {
     if (!block) return;
 
     const playableVoice = this.getPlayableVoice(block);
-    if (!playableVoice) {
-      const nextBlock = this._getNextBlock(blockId);
-      if (nextBlock) {
-        this.playBlock(nextBlock.id);
+    const nextBlock = this._getNextBlock(blockId);
+    if (nextBlock) {
+      const nextBlockPlayableVoice = this.getPlayableVoice(nextBlock);
+      if (nextBlockPlayableVoice) {
+        // preload the next block
+        this.preloadBlock(nextBlockPlayableVoice);
       }
-      return;
     }
 
+    if (playableVoice) {
+      // Play current
+      this.playBlockAudio(block, playableVoice);
+    } else if (nextBlock) {
+      // Play next
+      this.playBlock(nextBlock.id);
+    }
+  }
+
+  private voiceIdToHowlMap = new Map<string, Howl>();
+
+  private preloadBlock(playableVoice: TRBlockVoice) {
+    if (this.voiceIdToHowlMap.has(playableVoice.voiceId)) {
+      return;
+    } else {
+      const howl = new Howl({
+        src: [playableVoice.url],
+        format: playableVoice.ext,
+        html5: true,
+        preload: true,
+        autoplay: false,
+      });
+      this.voiceIdToHowlMap.set(playableVoice.voiceId, howl);
+    }
+  }
+
+  private playBlockAudio(block: TRBlock, playableVoice: TRBlockVoice) {
     if (this.audioInstance) {
       this.audioInstance.stop();
     }
 
     const { speed, volume } = this.store.getState().player;
 
-    // TODO (Changje, 2022-12-24) - Reimplement it to support preloading
-    const howl = new Howl({
-      src: [playableVoice.url],
-      format: playableVoice.ext,
-      html5: true,
-      volume,
-    });
+    // Get or create a howl object
+    const howl =
+      this.voiceIdToHowlMap.get(playableVoice.voiceId) ??
+      new Howl({
+        src: [playableVoice.url],
+        format: playableVoice.ext,
+        html5: true,
+        volume,
+      });
+    this.voiceIdToHowlMap.set(playableVoice.voiceId, howl);
+
+    // Set play attributes
     howl.seek(block.voiceStart / 1000);
     howl.rate(speed);
-    howl.play();
-    this.audioInstance = howl;
 
-    this.store.setState(
-      produce((state) => {
-        state.player = {
-          ...state.player,
-          targetBlockId: blockId,
-          mode: PlayModeType.PLAYING,
-          playAs: block.userId,
-          start: Date.now(),
-          end: Date.now() + (block.voiceEnd - block.voiceStart) / speed,
-          isDone: false,
-        };
-      }),
-    );
-    this._handlePlay();
+    // Remove the old listener
+    howl.off('load');
+    howl.off('play');
+
+    // Set the new listener
+    howl.on('load', () => {
+      const mode = this.store.getState().player.mode;
+      if (mode === PlayModeType.LOADING || mode === PlayModeType.PLAYING) {
+        howl.play();
+      }
+    });
+    howl.on('play', () => {
+      this.store.setState(
+        produce((state) => {
+          state.player = {
+            ...state.player,
+            targetBlockId: block.id,
+            mode: PlayModeType.PLAYING,
+            playAs: block.userId,
+            start: Date.now(),
+            end: Date.now() + (block.voiceEnd - block.voiceStart) / speed,
+            isDone: false,
+          };
+        }),
+      );
+      this._handlePlay();
+    });
+
+    // Play
+    const state = howl.state();
+    if (state === 'loaded') {
+      howl.play();
+    } else {
+      if (state === 'unloaded') {
+        howl.load();
+      }
+      this.store.setState(
+        produce((state) => {
+          state.player = {
+            ...state.player,
+            mode: PlayModeType.LOADING,
+            isLoading: true,
+            targetBlockId: block.id,
+            playAs: block.userId,
+            start: Date.now(),
+            end: Date.now() + (block.voiceEnd - block.voiceStart) / speed,
+            isDone: false,
+          };
+        }),
+      );
+    }
+    this.audioInstance = howl;
   }
 
   public playFromFirstBlock = () => {
@@ -1470,7 +1539,7 @@ export class TrawApp {
       if (this.playInterval) cancelAnimationFrame(this.playInterval);
       return;
     } else {
-      if (Date.now() > player.end) {
+      if (player.end < Date.now()) {
         // play next block
         if (!player.isLimit) {
           const nextBlock = this._getNextBlock(player.targetBlockId || '');
