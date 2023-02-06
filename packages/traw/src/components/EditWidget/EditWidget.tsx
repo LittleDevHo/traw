@@ -1,6 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import React from 'react';
+import { MagnifyingGlassIcon, CopyIcon } from '@radix-ui/react-icons';
+import React, { useState } from 'react';
 
 import {
   AlignStyle,
@@ -34,6 +34,7 @@ import { fills, strokes } from 'state/shapes/shared';
 import { breakpoints } from 'utils/breakpoints';
 import { preventEvent } from 'utils/preventEvent';
 import { useTrawApp } from 'hooks';
+import classNames from 'classnames';
 
 interface EditWidgetProps {
   camera: {
@@ -50,7 +51,6 @@ const optionsSelector = (s: TDSnapshot) => {
   const page = s.document.pages[pageId];
   for (const id of s.document.pageStates[pageId].selectedIds) {
     if (!page.shapes[id]) continue;
-    console.log(page.shapes[id]);
     if ('text' in page.shapes[id]) options.push(TDShapeType.Text);
     if ('label' in page.shapes[id]) options.push('label');
     if (page.shapes[id].type) options.push(page.shapes[id].type);
@@ -59,6 +59,8 @@ const optionsSelector = (s: TDSnapshot) => {
 };
 
 const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
+  const [widgetHint, setWidgetHint] = useState<string | undefined>(undefined);
+
   const trawApp = useTrawApp();
   const app = useTldrawApp();
 
@@ -71,6 +73,26 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
 
   const [displayedStyle, setDisplayedStyle] = React.useState(currentStyle);
   const rDisplayedStyle = React.useRef(currentStyle);
+
+  React.useEffect(() => {
+    setWidgetHint(undefined);
+
+    if (options.length === 0) return;
+
+    if (options.includes(TDShapeType.Arrow)) {
+      setWidgetHint('You can connect each objects');
+      return;
+    }
+
+    if (
+      options.includes(TDShapeType.Ellipse) ||
+      options.includes(TDShapeType.Rectangle) ||
+      options.includes(TDShapeType.Triangle)
+    ) {
+      setWidgetHint('Press Enter or double click to add text');
+      return;
+    }
+  }, [options]);
 
   React.useEffect(() => {
     const {
@@ -148,6 +170,10 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
     trawApp.zoomToSelection();
   }, [trawApp]);
 
+  const handleDuplicate = React.useCallback(() => {
+    app.duplicate();
+  }, [app]);
+
   const showFilledColor = React.useMemo(() => {
     if (options.length === 0) return false;
 
@@ -165,7 +191,7 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
   const showLineStyle = React.useMemo(() => {
     if (options.length === 0) return false;
 
-    if ((options.length === 1 && options[0] === TDShapeType.Text) || options[0] === 'label') return false;
+    if (options.length === 1 && options[0] === TDShapeType.Text) return false;
 
     if (
       options.includes(TDShapeType.Ellipse) ||
@@ -199,54 +225,61 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
       }}
       className={`z-10 absolute`}
     >
-      <div className="absolute -top-[52px] bg-white rounded-xl shadow-[0_10px_60px_rgba(189,188,249,0.5)]">
-        <ul className="flex p-2 gap-2 items-center">
+      <div
+        className={classNames('absolute', 'flex', 'flex-col', 'gap-2', {
+          '-top-[52px]': !widgetHint,
+          '-top-[92px]': widgetHint,
+        })}
+      >
+        <ul className="flex p-2 gap-2 items-center bg-white rounded-xl shadow-[0_10px_60px_rgba(189,188,249,0.5)]">
           {/* Fit to screen - all */}
           <li>
             <ToolButton variant="icon" onClick={handleFitScreen}>
               <MagnifyingGlassIcon />
             </ToolButton>
           </li>
-          {/* color - all */}
-          <li>
-            <DropdownMenu.Root dir="ltr" modal={false}>
-              <DropdownMenu.Trigger asChild id="TD-Styles">
-                <ToolButton variant="icon">
-                  <CircleIcon
-                    size={18}
-                    strokeWidth={2.5}
-                    fill="transparent"
-                    stroke={strokes.light[rDisplayedStyle.current.color as ColorStyle]}
-                  />
-                </ToolButton>
-              </DropdownMenu.Trigger>
-              <DMContent id="language-menu" side="top" align="center" sideOffset={10} alignOffset={0}>
-                <ColorGrid>
-                  {Object.keys(strokes.light).map((style: string) => (
-                    <DropdownMenu.Item
-                      key={style}
-                      onSelect={preventEvent}
-                      asChild
-                      id={`TD-Styles-Color-Swatch-${style}`}
-                    >
-                      <ToolButton
-                        variant="icon"
-                        isActive={displayedStyle.color === style}
-                        onClick={() => app.style({ color: style as ColorStyle })}
+          {/* color - except image */}
+          {!options.includes(TDShapeType.Image) && (
+            <li>
+              <DropdownMenu.Root dir="ltr" modal={false}>
+                <DropdownMenu.Trigger asChild id="TD-Styles">
+                  <ToolButton variant="icon">
+                    <CircleIcon
+                      size={18}
+                      strokeWidth={2.5}
+                      fill="transparent"
+                      stroke={strokes.light[rDisplayedStyle.current.color as ColorStyle]}
+                    />
+                  </ToolButton>
+                </DropdownMenu.Trigger>
+                <DMContent id="language-menu" side="top" align="center" sideOffset={10} alignOffset={0}>
+                  <ColorGrid>
+                    {Object.keys(strokes.light).map((style: string) => (
+                      <DropdownMenu.Item
+                        key={style}
+                        onSelect={preventEvent}
+                        asChild
+                        id={`TD-Styles-Color-Swatch-${style}`}
                       >
-                        <CircleIcon
-                          size={18}
-                          strokeWidth={2.5}
-                          fill={displayedStyle.isFilled ? fills[theme][style as ColorStyle] : 'transparent'}
-                          stroke={strokes.light[style as ColorStyle]}
-                        />
-                      </ToolButton>
-                    </DropdownMenu.Item>
-                  ))}
-                </ColorGrid>
-              </DMContent>
-            </DropdownMenu.Root>
-          </li>
+                        <ToolButton
+                          variant="icon"
+                          isActive={displayedStyle.color === style}
+                          onClick={() => app.style({ color: style as ColorStyle })}
+                        >
+                          <CircleIcon
+                            size={18}
+                            strokeWidth={2.5}
+                            fill={displayedStyle.isFilled ? fills[theme][style as ColorStyle] : 'transparent'}
+                            stroke={strokes.light[style as ColorStyle]}
+                          />
+                        </ToolButton>
+                      </DropdownMenu.Item>
+                    ))}
+                  </ColorGrid>
+                </DMContent>
+              </DropdownMenu.Root>
+            </li>
+          )}
           {showFilledColor && (
             /** Filled color - rectangle, ellipse, triangle */
             <li>
@@ -294,30 +327,32 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
               </DropdownMenu.Root>
             </li>
           )}
-          {/* Size - all */}
-          <li>
-            <DropdownMenu.Root dir="ltr" modal={false}>
-              <DropdownMenu.Trigger asChild id="TD-Styles">
-                <ToolButton variant="icon">{SIZE_ICONS[rDisplayedStyle.current.size as SizeStyle]}</ToolButton>
-              </DropdownMenu.Trigger>
-              <DMContent id="language-menu" side="top" align="center" sideOffset={10} alignOffset={0}>
-                <StyledGroup dir="ltr" value={displayedStyle.size} onValueChange={handleSizeChange}>
-                  {Object.values(SizeStyle).map((sizeStyle) => (
-                    <DMRadioItem
-                      key={sizeStyle}
-                      isActive={sizeStyle === displayedStyle.size}
-                      value={sizeStyle}
-                      onSelect={preventEvent}
-                      bp={breakpoints}
-                      id={`TD-Styles-Dash-${sizeStyle}`}
-                    >
-                      {SIZE_ICONS[sizeStyle as SizeStyle]}
-                    </DMRadioItem>
-                  ))}
-                </StyledGroup>
-              </DMContent>
-            </DropdownMenu.Root>
-          </li>
+          {/* Size - except image */}
+          {!options.includes(TDShapeType.Image) && (
+            <li>
+              <DropdownMenu.Root dir="ltr" modal={false}>
+                <DropdownMenu.Trigger asChild id="TD-Styles">
+                  <ToolButton variant="icon">{SIZE_ICONS[rDisplayedStyle.current.size as SizeStyle]}</ToolButton>
+                </DropdownMenu.Trigger>
+                <DMContent id="language-menu" side="top" align="center" sideOffset={10} alignOffset={0}>
+                  <StyledGroup dir="ltr" value={displayedStyle.size} onValueChange={handleSizeChange}>
+                    {Object.values(SizeStyle).map((sizeStyle) => (
+                      <DMRadioItem
+                        key={sizeStyle}
+                        isActive={sizeStyle === displayedStyle.size}
+                        value={sizeStyle}
+                        onSelect={preventEvent}
+                        bp={breakpoints}
+                        id={`TD-Styles-Dash-${sizeStyle}`}
+                      >
+                        {SIZE_ICONS[sizeStyle as SizeStyle]}
+                      </DMRadioItem>
+                    ))}
+                  </StyledGroup>
+                </DMContent>
+              </DropdownMenu.Root>
+            </li>
+          )}
 
           {/* Font - text, label, rectangle*/}
           {showTextStyle && (
@@ -377,6 +412,13 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
             </>
           )}
 
+          {/* Duplicate - all */}
+          <li>
+            <ToolButton variant="icon" onClick={handleDuplicate}>
+              <CopyIcon />
+            </ToolButton>
+          </li>
+
           {/* Delete - all */}
           <li>
             <ToolButton variant="icon" onClick={handleDelete}>
@@ -384,6 +426,9 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
             </ToolButton>
           </li>
         </ul>
+        {widgetHint && (
+          <div className="flex items-center justify-center text-xs text-traw-grey-200 select-none">{widgetHint}</div>
+        )}
       </div>
     </div>
   );
