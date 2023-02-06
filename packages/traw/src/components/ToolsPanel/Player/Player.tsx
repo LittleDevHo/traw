@@ -36,6 +36,8 @@ const Player = () => {
       timerRef.current = setInterval(() => {
         setCurrentTime((currentTime) => currentTime + 100);
       }, 100);
+    } else if (mode === PlayModeType.LOADING) {
+      setCurrentTime((Date.now() - start) * speed);
     } else if (mode === PlayModeType.PAUSE) {
       setCurrentTime((Date.now() - start) * speed);
     } else {
