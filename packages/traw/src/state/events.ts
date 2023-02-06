@@ -1,4 +1,4 @@
-import { TRBlock, TRBlockVoice, TRCamera, TRRecord } from 'types';
+import { TRBlock, TRBlockVoice, TRCamera, TRRecord, TRViewMode } from 'types';
 import { TldrawApp } from '@tldraw/tldraw';
 
 export interface TrawBaseEvent {
@@ -78,6 +78,15 @@ export interface CameraChangeEvent extends TrawBaseEvent {
 export type CameraChangeHandler = (event: CameraChangeEvent) => void;
 
 /**
+ * Event triggered when the view mode is changed
+ */
+export interface ChangeViewModeEvent extends TrawBaseEvent {
+  mode: TRViewMode;
+}
+
+export type ChangeViewModeHandler = (event: ChangeViewModeEvent) => void;
+
+/**
  * Traw Event Types
  */
 export enum TrawEventType {
@@ -89,6 +98,7 @@ export enum TrawEventType {
   CameraChange = 'cameraChange',
   EditBlock = 'editBlock',
   DeleteBlock = 'deleteBlock',
+  ChangeViewMode = 'changeViewMode',
 }
 
 /**
@@ -103,6 +113,7 @@ export interface EventTypeHandlerMap {
   [TrawEventType.CreateBlockVoice]: CreateBlockVoiceHandler;
   [TrawEventType.EditBlock]: EditBlockHandler;
   [TrawEventType.DeleteBlock]: DeleteBlockHandler;
+  [TrawEventType.ChangeViewMode]: ChangeViewModeHandler;
 }
 
 /**
@@ -116,4 +127,5 @@ export type TrawEventHandler =
   | CreateBlockHandler
   | CreateBlockVoiceHandler
   | EditBlockHandler
-  | DeleteBlockHandler;
+  | DeleteBlockHandler
+  | ChangeViewModeHandler;
