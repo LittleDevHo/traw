@@ -2,7 +2,16 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import React from 'react';
 
-import { AlignStyle, ColorStyle, DashStyle, FontStyle, ShapeStyles, SizeStyle } from '@tldraw/tldraw';
+import {
+  AlignStyle,
+  ColorStyle,
+  DashStyle,
+  FontStyle,
+  ShapeStyles,
+  SizeStyle,
+  TDShapeType,
+  TDSnapshot,
+} from '@tldraw/tldraw';
 import { DMContent, DMRadioItem } from 'components/Primitives/DropdownMenu';
 import { ToolButton } from 'components/Primitives/ToolButton';
 import {
@@ -11,7 +20,6 @@ import {
   currentStyleSelector,
   DASH_ICONS,
   FontIcon,
-  optionsSelector,
   selectedIdsSelector,
   SIZE_ICONS,
   StyledGroup,
@@ -36,6 +44,20 @@ interface EditWidgetProps {
   left: number;
 }
 
+const optionsSelector = (s: TDSnapshot) => {
+  const options: string[] = [];
+  const { currentPageId: pageId } = s.appState;
+  const page = s.document.pages[pageId];
+  for (const id of s.document.pageStates[pageId].selectedIds) {
+    if (!page.shapes[id]) continue;
+    console.log(page.shapes[id]);
+    if ('text' in page.shapes[id]) options.push(TDShapeType.Text);
+    if ('label' in page.shapes[id]) options.push('label');
+    if (page.shapes[id].type) options.push(page.shapes[id].type);
+  }
+  return options;
+};
+
 const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
   const trawApp = useTrawApp();
   const app = useTldrawApp();
@@ -43,7 +65,6 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
   const theme = app.useStore(themeSelector);
 
   const options = app.useStore(optionsSelector);
-
   const currentStyle = app.useStore(currentStyleSelector);
 
   const selectedIds = app.useStore(selectedIdsSelector);
@@ -127,6 +148,47 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
     trawApp.zoomToSelection();
   }, [trawApp]);
 
+  const showFilledColor = React.useMemo(() => {
+    if (options.length === 0) return false;
+
+    if (
+      options.includes(TDShapeType.Rectangle) ||
+      options.includes(TDShapeType.Ellipse) ||
+      options.includes(TDShapeType.Triangle)
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [options]);
+
+  const showLineStyle = React.useMemo(() => {
+    if (options.length === 0) return false;
+
+    if ((options.length === 1 && options[0] === TDShapeType.Text) || options[0] === 'label') return false;
+
+    if (
+      options.includes(TDShapeType.Ellipse) ||
+      options.includes(TDShapeType.Rectangle) ||
+      options.includes(TDShapeType.Triangle) ||
+      options.includes(TDShapeType.Draw) ||
+      options.includes(TDShapeType.Line) ||
+      options.includes(TDShapeType.Arrow)
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [options]);
+
+  const showTextStyle = React.useMemo(() => {
+    if (options.length === 0) return false;
+
+    if (options.includes(TDShapeType.Text) || options.includes('label')) return true;
+
+    return false;
+  }, [options]);
+
   if (app.readOnly) return null;
 
   return (
@@ -139,11 +201,13 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
     >
       <div className="absolute -top-[52px] bg-white rounded-xl shadow-[0_10px_60px_rgba(189,188,249,0.5)]">
         <ul className="flex p-2 gap-2 items-center">
+          {/* Fit to screen - all */}
           <li>
             <ToolButton variant="icon" onClick={handleFitScreen}>
               <MagnifyingGlassIcon />
             </ToolButton>
           </li>
+          {/* color - all */}
           <li>
             <DropdownMenu.Root dir="ltr" modal={false}>
               <DropdownMenu.Trigger asChild id="TD-Styles">
@@ -183,7 +247,8 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
               </DMContent>
             </DropdownMenu.Root>
           </li>
-          {options !== 'text' && (
+          {showFilledColor && (
+            /** Filled color - rectangle, ellipse, triangle */
             <li>
               <ToolButton variant="icon" onClick={handleToggleFilled}>
                 {displayedStyle.isFilled ? (
@@ -203,7 +268,8 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
               </ToolButton>
             </li>
           )}
-          {options !== 'text' && options !== 'label' && (
+          {showLineStyle && (
+            /**  Line Style - except text, label */
             <li>
               <DropdownMenu.Root dir="ltr" modal={false}>
                 <DropdownMenu.Trigger asChild id="TD-Styles">
@@ -228,7 +294,7 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
               </DropdownMenu.Root>
             </li>
           )}
-
+          {/* Size - all */}
           <li>
             <DropdownMenu.Root dir="ltr" modal={false}>
               <DropdownMenu.Trigger asChild id="TD-Styles">
@@ -252,7 +318,9 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
               </DMContent>
             </DropdownMenu.Root>
           </li>
-          {(options === 'text' || options === 'label') && (
+
+          {/* Font - text, label, rectangle*/}
+          {showTextStyle && (
             <>
               <li id="TD-Styles-Font-Container">
                 <DropdownMenu.Root dir="ltr" modal={false}>
@@ -279,7 +347,9 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
                   </DMContent>
                 </DropdownMenu.Root>
               </li>
-              {options === 'text' && rDisplayedStyle.current.textAlign && (
+
+              {/* Align */}
+              {options.includes(TDShapeType.Text) && rDisplayedStyle.current.textAlign && (
                 <li>
                   <DropdownMenu.Root dir="ltr" modal={false}>
                     <DropdownMenu.Trigger asChild id="TD-Styles">
@@ -306,6 +376,8 @@ const EditWidget = ({ camera, top, left }: EditWidgetProps) => {
               )}
             </>
           )}
+
+          {/* Delete - all */}
           <li>
             <ToolButton variant="icon" onClick={handleDelete}>
               <SvgTrash />
