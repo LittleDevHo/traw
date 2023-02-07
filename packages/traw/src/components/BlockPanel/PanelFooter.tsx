@@ -5,6 +5,7 @@ import { SpeakingIndicator } from 'components/Indicator';
 import React, { useState } from 'react';
 import { getSupportedLanguageByLocale } from 'utils/supportedLanguage';
 import SvgSend from '../../icons/send';
+import { TrawSpeechRecognizer } from 'recorder';
 
 export interface PanelFooterProps {
   isRecording: boolean;
@@ -76,7 +77,11 @@ export const PanelFooter = ({
               </button>
               <SpeakingIndicator size={17} isSpeaking={isTalking} />
             </div>
-            <SpeechViewer className="h-8 text-xs overflow-y-scroll px-0.5" text={recognizedText} />
+            {TrawSpeechRecognizer.isSupported() ? (
+              <SpeechViewer className="h-8 text-xs overflow-y-scroll px-0.5" text={recognizedText} />
+            ) : (
+              <div className="h-4" />
+            )}
           </>
         )}
         <div
