@@ -20,6 +20,7 @@ const ViewToggleGroup = () => {
   const viewMode = app.useStore((state: TrawSnapshot) => state.ui.mode);
 
   const isPlaying = app.useStore((state: TrawSnapshot) => state.player.mode === PlayModeType.PLAYING);
+
   const isRecording = app.useStore((state: TrawSnapshot) => state.recording.isRecording);
 
   const { isBrowser } = useDeviceDetect();
@@ -29,6 +30,10 @@ const ViewToggleGroup = () => {
 
     if (isPlaying) {
       app.backToEditor();
+    }
+
+    if (isRecording) {
+      return;
     }
 
     app.toggleViewMode(mode);
@@ -45,7 +50,12 @@ const ViewToggleGroup = () => {
           onValueChange={handleClicked}
         >
           {Object.values(TRViewMode).map((value: TRViewMode, index: number) => (
-            <ToggleButtonItem value={value} aria-label={`${value} mode`} key={index}>
+            <ToggleButtonItem
+              value={value}
+              aria-label={`${value} mode`}
+              key={index}
+              disabled={value !== viewMode && (isRecording || isPlaying)}
+            >
               {ToggleButtonLabel[value]}
             </ToggleButtonItem>
           ))}
@@ -100,6 +110,16 @@ const ToggleButtonItem = styled(ToggleGroup.Item, {
     color: '$trawPurple',
     backgroundColor: '$hover',
   },
+
+  '&[data-disabled]': {
+    color: 'rgba(0, 0, 0, 0.26)',
+  },
+
+  '&[data-disabled]:hover': {
+    color: 'rgba(0, 0, 0, 0.26) ',
+    backgroundColor: '#FFF ',
+  },
+
   '&:first-child': {
     borderTopLeftRadius: 15,
     borderBottomLeftRadius: 15,
