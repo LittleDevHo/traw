@@ -29,7 +29,7 @@ export class TrawRecorder {
   private _trawVoiceBlockGenerator: TrawVoiceBlockGenerator;
   private _trawVoiceRecorder: TrawVoiceRecorder;
   private _trawTalkingDetector: TrawTalkingDetector;
-  private _trawSpeechRecognizer: TrawSpeechRecognizer;
+  private _trawSpeechRecognizer?: TrawSpeechRecognizer;
 
   /**
    * true when the user is exactly talking at the moment.
@@ -88,14 +88,16 @@ export class TrawRecorder {
       onSilence: this._onSilence,
       silenceTimeout,
     });
-    this._trawSpeechRecognizer = new TrawSpeechRecognizer({
-      lang: speechRecognitionLanguage,
-      onRecognized: this._onRecognized,
-    });
+    if (TrawSpeechRecognizer.isSupported()) {
+      this._trawSpeechRecognizer = new TrawSpeechRecognizer({
+        lang: speechRecognitionLanguage,
+        onRecognized: this._onRecognized,
+      });
+    }
   }
 
   public static isSupported(): boolean {
-    return TrawVoiceRecorder.isSupported() && TrawSpeechRecognizer.isSupported() && MediaStreamManager.isSupported();
+    return TrawVoiceRecorder.isSupported() && MediaStreamManager.isSupported();
   }
 
   public get isMuted(): boolean {
@@ -110,7 +112,7 @@ export class TrawRecorder {
       this._trawTalkingDetector.updateAudioContext(this._audioContext);
     }
 
-    this._trawSpeechRecognizer.startRecognition();
+    this._trawSpeechRecognizer?.startRecognition();
     await this._mediaStreamManager.startMediaStream();
     this._trawVoiceBlockGenerator.markBlockStartedAt();
     this._trawVoiceRecorder.startVoiceRecorder();
@@ -118,7 +120,7 @@ export class TrawRecorder {
 
   public stopRecording = (): void => {
     this._trawVoiceRecorder.stopVoiceRecorder();
-    this._trawSpeechRecognizer.stopRecognition();
+    this._trawSpeechRecognizer?.stopRecognition();
     this._mediaStreamManager.stopMediaStream();
     this._onTalking(false);
   };
@@ -126,19 +128,19 @@ export class TrawRecorder {
   public mute = (): void => {
     if (!this.isMuted) {
       this._mediaStreamManager.muteMediaStream();
-      this._trawSpeechRecognizer.stopRecognition();
+      this._trawSpeechRecognizer?.stopRecognition();
     }
   };
 
   public unmute = (): void => {
     if (this.isMuted) {
       this._mediaStreamManager.unmuteMediaStream();
-      this._trawSpeechRecognizer.startRecognition();
+      this._trawSpeechRecognizer?.startRecognition();
     }
   };
 
   public changeSpeechRecognitionLanguage = (lang: string): void => {
-    this._trawSpeechRecognizer.changeLanguage(lang);
+    this._trawSpeechRecognizer?.changeLanguage(lang);
     this._trawVoiceBlockGenerator.changeSpeechRecognitionLanguage(lang);
   };
 
