@@ -137,7 +137,12 @@ const imageUrlToBase64 = async (url: string) => {
   });
 };
 
+const imageCache = new Map<string, string>();
+
 async function resolveImage(url: string) {
+  if (imageCache.has(url)) return imageCache.get(url)!;
   const response = await fetch(url, { mode: 'cors' });
-  return await imageUrlToBase64(response.url);
+  const dataUrl = await imageUrlToBase64(response.url);
+  imageCache.set(url, dataUrl);
+  return dataUrl;
 }

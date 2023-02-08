@@ -1759,10 +1759,6 @@ export class TrawApp {
       bound,
     });
     if (!blob) throw new Error('Failed to get image');
-    const link = window.document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'capture.webp';
-    link.click();
     return blob;
   };
 
@@ -1785,7 +1781,7 @@ export class TrawApp {
 
     const url = await this.onAssetCreate(this.app, file, block.id + '-capture');
 
-    if (!url) throw new Error('Failed to create asset');
+    if (!url) return '';
 
     this.store.setState(
       produce((state) => {
