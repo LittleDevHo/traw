@@ -1,4 +1,5 @@
 import { useTrawApp } from 'hooks';
+import LoadingCircular from 'icons/loading-circular';
 import React from 'react';
 
 export interface DocImageViewerProps {
@@ -27,8 +28,13 @@ const DocImageViewer = ({ blockId }: DocImageViewerProps) => {
 
   if (!block) return null;
   return (
-    <div className="aspect-video flex relative">
-      {block.captureUrl ? <img src={block.captureUrl} /> : null}
+    <div className="aspect-video flex relative flex-wrap justify-center content-center">
+      {block.captureUrl ? (
+        <img src={block.captureUrl} />
+      ) : (
+        <LoadingCircular className="animate-spin h-10 w-10 text-traw-purple" />
+      )}
+
       {/* <TrawContext.Provider value={trawApp}>
         <Editor readOnly />
       </TrawContext.Provider> */}
