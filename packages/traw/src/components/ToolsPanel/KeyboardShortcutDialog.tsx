@@ -125,7 +125,7 @@ export function KeyboardShortcutDialog({ onOpenChange }: { onOpenChange?: (open:
 const Label = styled('h3', {
   fontSize: '$2',
   color: '$text',
-  fontFamily: '$ui',
+  fontFamily: '$tldrawUi',
   margin: 0,
   paddingBottom: '$5',
 });
@@ -151,13 +151,16 @@ const StyledItem = styled('li', {
   width: '100%',
   outline: 'none',
   color: '$text',
-  fontFamily: '$ui',
-  fontWeight: 400,
-  fontSize: '$1',
   borderRadius: 4,
   userSelect: 'none',
   margin: 0,
   padding: '0 0',
+  fontSize: '$1',
+  '& span': {
+    color: '$text',
+    fontFamily: '$tldrawUi',
+    fontWeight: 400,
+  },
 });
 
 const DialogContent = styled(Dialog.Content, {
@@ -229,7 +232,7 @@ const DialogIconButton = styled(IconButton, {
 });
 
 const DialogTitle = styled(Dialog.Title, {
-  fontFamily: '$body',
+  fontFamily: '$tldrawUi',
   fontSize: '$3',
   color: '$text',
   paddingBottom: 32,

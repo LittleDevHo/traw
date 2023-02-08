@@ -61,6 +61,7 @@ const { styled, createTheme } = createStitches({
       ui: '"Lexend", "NanumSquare", system-ui, sans-serif',
       body: '"Lexend", "NanumSquare", system-ui, sans-serif',
       mono: '"Lexend", "NanumSquare", monospace',
+      tldrawUi: '"Recursive", system-ui, sans-serif',
       help: '"Recursive Mono", monospace',
     },
     fontWeights: {},
