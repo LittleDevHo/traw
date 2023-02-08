@@ -14,6 +14,10 @@ import { styled } from 'stitches.config';
 import { breakpoints } from 'utils/breakpoints';
 import { KeyboardShortcutDialog } from './KeyboardShortcutDialog';
 
+import { ArrowBottomRightIcon } from '@radix-ui/react-icons';
+import useDeviceDetect from 'hooks/useDeviceDetect';
+import { isEmptyDocumentSelector, HelperContainer } from 'components/HelperContainer/HelperContainer';
+
 const isDebugModeSelector = (s: TDSnapshot) => s.settings.isDebugMode;
 const dockPositionState = (s: TDSnapshot) => s.settings.dockPosition;
 
@@ -29,6 +33,10 @@ export function HelpPanel() {
 
   const appPadding = trawApp.useStore((state) => state.editor.padding);
 
+  const isEmptyDocument = trawApp.useStore(isEmptyDocumentSelector);
+
+  const { isBrowser } = useDeviceDetect();
+
   return (
     <Popover.Root>
       <PopoverAnchor
@@ -39,6 +47,12 @@ export function HelpPanel() {
         panelOpen={panelOpen}
         css={{ $$right: `${appPadding.right + 10}px` }}
       >
+        {isEmptyDocument && isBrowser && (
+          <HelperContainer className="flex-col bottom-full right-0  items-center mr-4 ">
+            <div>Shortcuts and communities</div>
+            <ArrowBottomRightIcon className="w-16 h-12 fill-current " />
+          </HelperContainer>
+        )}
         <Popover.Trigger dir="ltr" asChild>
           <HelpButton>
             <QuestionMarkIcon />

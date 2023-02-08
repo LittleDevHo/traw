@@ -13,6 +13,9 @@ import { ActionButton } from './ActionButton';
 import useDeviceDetect from 'hooks/useDeviceDetect';
 import Subtitle from './Player/Subtitle';
 
+import { ArrowDownIcon } from '@radix-ui/react-icons';
+import { HelperContainer, isEmptyDocumentSelector } from 'components/HelperContainer/HelperContainer';
+
 const isDebugModeSelector = (s: TDSnapshot) => s.settings.isDebugMode;
 const dockPositionState = (s: TDSnapshot) => s.settings.dockPosition;
 
@@ -31,6 +34,8 @@ export const ToolsPanel = React.memo(function ToolsPanel({ onBlur }: ToolsPanelP
 
   const appPadding = trawApp.useStore((state) => state.editor.padding);
 
+  const isEmptyDocument = trawApp.useStore(isEmptyDocumentSelector);
+
   return (
     <>
       <StyledToolsPanelContainer
@@ -43,6 +48,22 @@ export const ToolsPanel = React.memo(function ToolsPanel({ onBlur }: ToolsPanelP
       >
         {
           <StyledAlignWrap id="TD-Tools" bp={breakpoints}>
+            {isEmptyDocument && isBrowser && (
+              <>
+                <HelperContainer className="bottom-full  flex-col items-center left-0 w-[180px] ml-[40px] mb-2">
+                  <div>Pick a tool and visualize your idea!</div>
+                  <ArrowDownIcon className="w-auto h-12 fill-current " />
+                </HelperContainer>
+                <HelperContainer className="bottom-full  flex-col items-start  w-[260px] md:max-w-[140px] md:right-[80px] lg:max-w-[200px] lg:right-[23px] xl:max-w-full xl:-right-[38px] mb-2">
+                  <div>
+                    Import templates for quick start!
+                    <br />
+                    Or you can upload images and pdf files to discuss!
+                  </div>
+                  <ArrowDownIcon className="w-auto h-12 fill-current " />
+                </HelperContainer>
+              </>
+            )}
             <StyledPrimaryTools
               orientation={side === 'bottom' || side === 'top' ? 'horizontal' : 'vertical'}
               bp={breakpoints}
@@ -75,7 +96,6 @@ export const StyledToolsPanelContainer = styled('div', {
   justifyContent: 'center',
   alignItems: 'center',
   zIndex: 200,
-  overflow: 'hidden',
   pointerEvents: 'none',
 
   '& > div > *': {
@@ -154,6 +174,7 @@ const StyledAlignWrap = styled('div', {
   justifyContent: 'center',
   flexDirection: 'column',
   gap: '$4',
+  position: 'relative',
   variants: {
     bp: {
       medium: {
