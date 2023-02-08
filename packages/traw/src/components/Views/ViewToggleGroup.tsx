@@ -7,6 +7,8 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { DMContent } from 'components/Primitives/DropdownMenu';
 import useDeviceDetect from 'hooks/useDeviceDetect';
+import { ArrowUpIcon } from '@radix-ui/react-icons';
+import { HelperContainer, isEmptyDocumentSelector } from 'components/HelperContainer/HelperContainer';
 
 const ToggleButtonLabel = {
   [TRViewMode.CANVAS]: 'Canvas',
@@ -24,6 +26,8 @@ const ViewToggleGroup = () => {
   const isRecording = app.useStore((state: TrawSnapshot) => state.recording.isRecording);
 
   const { isBrowser } = useDeviceDetect();
+
+  const isEmptyDocument = app.useStore(isEmptyDocumentSelector);
 
   const handleClicked = (mode: TRViewMode) => {
     if (!mode) return;
@@ -81,6 +85,22 @@ const ViewToggleGroup = () => {
             </DMContent>
           </DropdownMenu.Root>
         )
+      )}
+      {isEmptyDocument && isBrowser && (
+        <HelperContainer
+          className="top-full  text-base flex-col 
+        left-1/2 transform -translate-x-1/2
+        items-center
+        
+        "
+        >
+          <ArrowUpIcon className="w-auto h-20 fill-current " />
+          <div className="flex flex-col md:max-w-[150px] lg:max-w-[200px] xl:max-w-[370px] 2xl:max-w-full">
+            Canvas : collaborative whiteboard that can have online meeting
+            <br /> Video : You can watch the meeting again.
+            <br /> Doc : You can skim the meeting as document.
+          </div>
+        </HelperContainer>
       )}
     </ToggleButtonContainer>
   );

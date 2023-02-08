@@ -8,6 +8,9 @@ import { styled } from 'stitches.config';
 import { TRViewMode } from 'types';
 import ViewToggleGroup from './ViewToggleGroup';
 import { VideoMenu } from 'components/VideoMenu';
+import { ArrowTopLeftIcon, ArrowTopRightIcon } from '@radix-ui/react-icons';
+import useDeviceDetect from 'hooks/useDeviceDetect';
+import { HelperContainer, isEmptyDocumentSelector } from 'components/HelperContainer/HelperContainer';
 
 const HeaderPanel = () => {
   const app = useTrawApp();
@@ -15,6 +18,10 @@ const HeaderPanel = () => {
 
   const components = useTRComponentsContext();
   const functions = useTRFunctionsContext();
+
+  const { isBrowser } = useDeviceDetect();
+
+  const isEmptyDocument = app.useStore(isEmptyDocumentSelector);
 
   return (
     <HeaderPanelContainer>
@@ -24,6 +31,14 @@ const HeaderPanel = () => {
           handleNavigateHome={functions?.handleNavigateHome}
         />
       </LeftPanelContainer>
+      {isEmptyDocument && isBrowser && (
+        <HelperContainer className="top-full left-[141px]  text-base items-baseline ml-4 mt-2 ">
+          <ArrowTopLeftIcon className="w-auto h-12 fill-current " />
+          <div className="flex flex-col md:max-w-[120px] lg:max-w-[190px] xl:max-w-full">
+            If you click the logo, you can go home. <br /> You can change the title directly.
+          </div>
+        </HelperContainer>
+      )}
 
       <ViewToggleGroup />
 
@@ -33,6 +48,14 @@ const HeaderPanel = () => {
         {/* 
         {viewMode === TRViewMode.DOC && <div>document</div>} */}
       </RightPanelContainer>
+      {isEmptyDocument && isBrowser && (
+        <HelperContainer className="top-full right-[285px] text-base items-end mr-4 mt-2 flex-col md:invisible lg:visible">
+          <ArrowTopRightIcon className="w-auto h-12 fill-current " />
+          <div className="flex flex-col md:max-w-[120px] lg:max-w-[120px] xl:max-w-[180px]  2xl:max-w-full">
+            Invite people and have an online meeting.
+          </div>
+        </HelperContainer>
+      )}
     </HeaderPanelContainer>
   );
 };
