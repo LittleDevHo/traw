@@ -110,6 +110,7 @@ const ToggleButtonContainer = styled('div', {
   display: 'flex',
   margin: '0 auto',
   alignItems: 'center',
+  userSelect: 'none',
   zIndex: 1000,
 });
 

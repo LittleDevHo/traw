@@ -36,7 +36,8 @@ export type CreateBlockVoiceHandler = (event: CreateBlockVoiceEvent) => void;
 
 export interface EditBlockEvent extends TrawBaseEvent {
   blockId: string;
-  text: string;
+  text?: string;
+  captureUrl?: string;
 }
 
 export type EditBlockHandler = (event: EditBlockEvent) => void;

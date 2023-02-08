@@ -1,37 +1,37 @@
-import { Editor } from 'components/Editor';
-import { TrawContext, useTrawApp } from 'hooks';
-import React, { useEffect } from 'react';
-import { TrawApp } from 'state';
-import { TEST_DOCUMENT_1, TEST_USER_1 } from 'utils/testUtil';
+import { useTrawApp } from 'hooks';
+import React from 'react';
 
 export interface DocImageViewerProps {
-  time: number;
-  userId: string;
+  blockId: string;
 }
 
-const DocImageViewer = ({ time, userId }: DocImageViewerProps) => {
-  const parentApp = useTrawApp();
-  const [trawApp] = React.useState(
-    new TrawApp({
-      user: {
-        ...TEST_USER_1,
-        id: userId,
-      },
-      document: TEST_DOCUMENT_1,
-    }),
-  );
+const DocImageViewer = ({ blockId }: DocImageViewerProps) => {
+  // const parentApp = useTrawApp();
+  // const [trawApp] = React.useState(
+  //   new TrawApp({
+  //     user: {
+  //       ...TEST_USER_1,
+  //       id: userId,
+  //     },
+  //     document: TEST_DOCUMENT_1,
+  //   }),
+  // );
 
-  useEffect(() => {
-    const records = parentApp.sortedRecords;
-    const filteredRecords = records.filter((record) => record.start <= time);
-    trawApp.addRecords(filteredRecords);
-  }, [parentApp.sortedRecords, time, trawApp]);
+  // useEffect(() => {
+  //   const records = parentApp.sortedRecords;
+  //   const filteredRecords = records.filter((record) => record.start <= time);
+  //   trawApp.addRecords(filteredRecords);
+  // }, [parentApp.sortedRecords, time, trawApp]);
+  const app = useTrawApp();
+  const block = app.useStore((state) => state.blocks[blockId]);
 
+  if (!block) return null;
   return (
     <div className="aspect-video flex relative">
-      <TrawContext.Provider value={trawApp}>
+      {block.captureUrl ? <img src={block.captureUrl} /> : null}
+      {/* <TrawContext.Provider value={trawApp}>
         <Editor readOnly />
-      </TrawContext.Provider>
+      </TrawContext.Provider> */}
     </div>
   );
 };

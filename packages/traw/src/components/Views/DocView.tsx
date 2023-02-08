@@ -1,15 +1,18 @@
 import DocumentView from 'components/Doc/DocumentView';
+import { Editor } from 'components/Editor';
 import { useTrawApp } from 'hooks';
 import React, { useEffect } from 'react';
 
 const DocView = () => {
   const app = useTrawApp();
   const state = app.useStore();
-  const { document } = state;
+  const { document, records } = state;
+  const blocks = app.sortedBlocks;
+  const recordsLength = Object.keys(records).length;
 
   useEffect(() => {
-    app.updateBlockViewportMap();
-  }, [app]);
+    app.updateDocModeData();
+  }, [app, blocks.length, recordsLength]);
 
   return (
     <div className="w-full h-full  bg-traw-purple-dark overflow-scroll relative pt-7">
@@ -21,6 +24,9 @@ const DocView = () => {
 
           <DocumentView />
         </div>
+      </div>
+      <div className="hidden">
+        <Editor />
       </div>
     </div>
   );

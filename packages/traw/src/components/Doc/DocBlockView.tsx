@@ -4,8 +4,6 @@ import { useTrawApp } from 'hooks';
 import moment from 'moment';
 import React, { memo, useEffect, useMemo } from 'react';
 import { TrawSnapshot } from 'types';
-import { UserAvatar } from '../Avatar/Avatar';
-import DocImageViewer from './DocImageViewer';
 
 export interface BlockItemProps {
   userId: string;
@@ -17,20 +15,10 @@ export interface BlockItemProps {
   isPlaying?: boolean;
   beforeBlockUserId: string;
   highlightText?: string;
-  isFirstSection: boolean;
 }
 
 export const DockBlockView = memo(
-  ({
-    userId,
-    isFirstSection,
-    date,
-    isVoiceBlock,
-    blockText,
-    isPlaying,
-    beforeBlockUserId,
-    highlightText,
-  }: BlockItemProps) => {
+  ({ userId, date, isVoiceBlock, blockText, isPlaying, beforeBlockUserId, highlightText }: BlockItemProps) => {
     const trawApp = useTrawApp();
 
     const user = trawApp.useStore((state: TrawSnapshot) => state.users[userId]);
@@ -60,14 +48,16 @@ export const DockBlockView = memo(
 
     return (
       <div className="bg-white w-full">
-        {isFirstSection && <DocImageViewer time={date || 0} userId={userId} />}
         {beforeBlockUserId === userId ? null : (
           <div className="flex flex-1 flex-row items-center w-full grow gap-1 mt-3 mb-1">
-            <div className="flex relative">
+            {/* <div className="flex relative select-none">
               {user && <UserAvatar avatarUrl={user.profileUrl} userName={user.name} size={15} />}
-            </div>
+            </div> */}
             {user && <div className="font-bold text-[13px] text-traw-grey-dark">{user.name}</div>}
-            <div className="text-traw-grey-100 text-[10px]">{dateStr}</div>
+            <div
+              className="text-traw-grey-100 text-[10px] select-none before:content-[attr(data-content)]"
+              data-content={dateStr}
+            ></div>
           </div>
         )}
 

@@ -1,13 +1,14 @@
 import { useTrawApp } from 'hooks';
-import React, { useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { PlayModeType, TrawSnapshot } from 'types';
-import DockBlockView from './DocBlockView';
+import DocBlockView from './DocBlockView';
+import DocImageViewer from './DocImageViewer';
 
 export default function DocumentView() {
   const app = useTrawApp();
 
   const query = app.useStore((state) => state.editor.search.query);
-  const blockViewportMap = app.useStore((state: TrawSnapshot) => state.blockViewportMap);
+  const { blockViewportMap, lastBlockMap } = app.useStore((state: TrawSnapshot) => state.doc);
 
   const targetBlockId = app.useStore((state: TrawSnapshot) =>
     state.player.mode === PlayModeType.PLAYING ? state.player.targetBlockId : undefined,
@@ -28,18 +29,20 @@ export default function DocumentView() {
         const cameraRecordId = blockViewportMap[block.id];
         const isFirstSection = index === 0 || cameraRecordId !== blockViewportMap[sortedFilteredBlocks[index - 1].id];
         return (
-          <DockBlockView
-            key={block.id}
-            userId={block.userId}
-            date={block.time}
-            blockId={block.id}
-            blockText={block.text}
-            isPlaying={targetBlockId === block.id}
-            isVoiceBlock={block.voices.length > 0}
-            highlightText={query || undefined}
-            beforeBlockUserId={sortedFilteredBlocks[index - 1]?.userId}
-            isFirstSection={isFirstSection}
-          />
+          <Fragment key={block.id}>
+            {isFirstSection && <DocImageViewer blockId={lastBlockMap[cameraRecordId]} />}
+            <DocBlockView
+              key={block.id}
+              userId={block.userId}
+              date={block.time}
+              blockId={block.id}
+              blockText={block.text}
+              isPlaying={targetBlockId === block.id}
+              isVoiceBlock={block.voices.length > 0}
+              highlightText={query || undefined}
+              beforeBlockUserId={sortedFilteredBlocks[index - 1]?.userId}
+            />
+          </Fragment>
         );
       })}
     </>

@@ -1,4 +1,14 @@
-import { TDAsset, TDShapeType, TDToolType, TDUser, TLDR, TldrawApp, TldrawCommand, TldrawPatch } from '@tldraw/tldraw';
+import {
+  TDAsset,
+  TDExportType,
+  TDShapeType,
+  TDToolType,
+  TDUser,
+  TLDR,
+  TldrawApp,
+  TldrawCommand,
+  TldrawPatch,
+} from '@tldraw/tldraw';
 import debounce from 'lodash/debounce';
 import { nanoid } from 'nanoid';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
@@ -31,7 +41,7 @@ import { cloneDeepWith } from 'lodash';
 import { TrawRecorder } from 'recorder/TrawRecorder';
 import { CreateRecordsEvent, EventTypeHandlerMap, TrawEventHandler, TrawEventType } from 'state/events';
 import { encodeFile } from 'utils/base64';
-import { isChrome } from 'utils/common';
+import { getCommonBounds, getImageForSvg, isChrome } from 'utils/common';
 import create, { UseBoundStore } from 'zustand';
 import { TrawAppOptions } from './TrawAppOptions';
 
@@ -231,7 +241,10 @@ export class TrawApp {
       document,
       records: recordMap,
       blocks: {},
-      blockViewportMap: {},
+      doc: {
+        blockViewportMap: {},
+        lastBlockMap: {},
+      },
       users: {},
       playerOptions,
     };
@@ -1667,7 +1680,7 @@ export class TrawApp {
     });
   };
 
-  updateBlockViewportMap = () => {
+  updateDocModeData = () => {
     const sortedBlocks = this.sortedBlocks;
     const records = this.store.getState().records;
     const cameraRecords = Object.values(records)
@@ -1677,24 +1690,128 @@ export class TrawApp {
     if (sortedBlocks.length === 0 || cameraRecords.length === 0) return;
 
     const blockViewportMap: Record<string, string> = {};
+    const lastBlockMap: Record<string, string> = {};
 
     let pointer = 0;
     let currentCamera = cameraRecords[pointer];
 
     sortedBlocks.forEach((block) => {
-      while (currentCamera && currentCamera.end < block.time) {
+      while (
+        currentCamera &&
+        currentCamera.end < block.time + block.voiceEnd - block.voiceStart &&
+        cameraRecords[pointer + 1]
+      ) {
         pointer++;
         currentCamera = cameraRecords[pointer];
       }
 
       blockViewportMap[block.id] = currentCamera?.id || '';
+      lastBlockMap[currentCamera?.id || ''] = block.id;
     });
 
     this.store.setState(
       produce((state) => {
-        state.blockViewportMap = blockViewportMap;
+        state.doc.blockViewportMap = blockViewportMap;
+        state.doc.lastBlockMap = lastBlockMap;
       }),
     );
+
+    const lastBlocks = Object.values(lastBlockMap);
+    setTimeout(() => {
+      this.createBlockCaptures(lastBlocks);
+    }, 0);
+  };
+
+  capturingBlocks: Record<string, boolean> = {};
+
+  private captureCurrentViewport: (captureAs: string) => Promise<Blob> = async (captureAs) => {
+    const tldrawApp = this.app;
+    const shapeIds = tldrawApp.shapes.map((s) => s.id);
+
+    const commonBounds = getCommonBounds(tldrawApp.shapes.map(TLDR.getRotatedBounds));
+
+    const svg = await tldrawApp.getSvg(shapeIds, {
+      includeFonts: true,
+    });
+
+    if (!svg) throw new Error('Failed to get svg');
+
+    const { center, zoom } = this.store.getState().camera[captureAs].cameras[tldrawApp.currentPageId];
+
+    const delta = {
+      // tldraw's padding is 16
+      x: commonBounds.minX - 16,
+      y: commonBounds.minY - 16,
+    };
+
+    const bound = {
+      width: SLIDE_WIDTH / zoom,
+      height: SLIDE_HEIGHT / zoom,
+      minX: center.x - SLIDE_WIDTH / 2 / zoom - delta.x,
+      minY: center.y - SLIDE_HEIGHT / 2 / zoom - delta.y,
+      maxX: center.x + SLIDE_WIDTH / 2 / zoom - delta.x,
+      maxY: center.y + SLIDE_HEIGHT / 2 / zoom - delta.y,
+    };
+
+    const blob = await getImageForSvg(svg, TDExportType.WEBP, {
+      scale: 2,
+      quality: 1,
+      bound,
+    });
+    if (!blob) throw new Error('Failed to get image');
+    const link = window.document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'capture.webp';
+    link.click();
+    return blob;
+  };
+
+  private createCapture: (blockId: string) => Promise<string> = async (blockId) => {
+    if (this.capturingBlocks[blockId]) return '';
+    this.capturingBlocks[blockId] = true;
+    const block = this.store.getState().blocks[blockId];
+    if (!block) throw new Error('Block not found');
+    if (block.captureUrl) return block.captureUrl;
+
+    const records = this.sortedRecords;
+    const filteredRecords = records.filter((record) => record.start <= block.time + block.voiceEnd - block.voiceStart);
+    this.applyRecords(filteredRecords.length);
+
+    const blob = await this.captureCurrentViewport(block.userId);
+
+    const file = new File([blob], 'capture.webp', { type: 'image/webp' });
+
+    if (!this.onAssetCreate) throw new Error('onAssetCreate is not defined');
+
+    const url = await this.onAssetCreate(this.app, file, block.id + '-capture');
+
+    if (!url) throw new Error('Failed to create asset');
+
+    this.store.setState(
+      produce((state) => {
+        state.blocks[block.id].captureUrl = url;
+      }),
+    );
+
+    this.emit(TrawEventType.EditBlock, { tldrawApp: this.app, blockId: block.id, captureUrl: url });
+
+    this.capturingBlocks[blockId] = false;
+    return url;
+  };
+
+  private createBlockCaptures = async (blockIds: string[]) => {
+    const blocks = this.store.getState().blocks;
+    const filteredBlocks = Object.values(blocks)
+      .filter((b) => blockIds.includes(b.id) && !b.captureUrl)
+      .sort((a, b) => a.time - b.time);
+
+    let index = 0;
+    while (index < filteredBlocks.length) {
+      const block = filteredBlocks[index];
+      if (!block.captureUrl) await this.createCapture(block.id);
+
+      index++;
+    }
   };
 
   navigateFrame = (direction: 'next' | 'prev') => {
