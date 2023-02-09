@@ -57,11 +57,12 @@ export const PanelFooter = ({
           'border',
           'border-traw-divider',
           'px-2',
-          'py-1.5',
           'gap-3',
+          'py-1.5',
+          'transition-all',
           {
-            'rounded-xl': isRecording,
-            'rounded-full': !isRecording,
+            'rounded-xl bg-transparent  ': isRecording,
+            'rounded-none border-transparent ': !isRecording,
           },
         )}
       >
@@ -85,21 +86,32 @@ export const PanelFooter = ({
           </>
         )}
         <div
-          className={classNames('flex', 'items-center', 'rounded-full', 'px-2', 'transition-colors', {
-            'bg-traw-sky': isRecording,
-          })}
+          className={classNames(
+            'group',
+            'flex',
+            'items-center',
+            'rounded-full',
+            'py-1',
+            'px-2',
+            'border',
+            'border-transparent',
+            'bg-traw-sky focus-within:border-traw-purple focus-within:bg-transparent',
+            'transition-colors',
+          )}
         >
           <textarea
             className={classNames(
               'w-full',
               'resize-none',
-              'bg-transparent',
               'text-traw-grey-dark',
               'text-xs',
-              'px-0.5',
+              'px-1',
               'py-1.5',
-              'focus-visible:outline-0',
               'gap-2',
+              'transition-colors',
+              'bg-traw-sky ',
+              'focus-visible:outline-0',
+              'group-focus-within:bg-transparent',
             )}
             rows={1}
             placeholder="Enter messages here."
@@ -108,10 +120,9 @@ export const PanelFooter = ({
             onKeyDown={handleKeyDown}
           />
           <button
-            className={classNames('w-4 transition-colors duration-150', {
-              'text-traw-grey-100': !text,
-              'text-traw-purple': text,
-            })}
+            className={classNames(
+              'w-4 transition-colors duration-150 text-traw-grey-100 group-focus-within:text-traw-purple ',
+            )}
             onClick={handleClick}
           >
             <SvgSend className="fill-current w-4 h-4" />
